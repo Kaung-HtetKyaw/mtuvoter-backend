@@ -1,0 +1,51 @@
+const mongoose = require("mongoose");
+
+const electionSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "An election must have a name"],
+  },
+  startDate: {
+    type: Date,
+    required: [true, "Election must have a start date"],
+  },
+  endDate: {
+    type: Date,
+    required: [true, "Election must have a end date"],
+  },
+  description: {
+    type: String,
+    required: [true, "Election must have a description"],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  type: {
+    type: String,
+    required: [true, "Election must have a type"],
+    enum: {
+      values: ["student", "teacher"],
+      message: "Invalid election type",
+    },
+  },
+});
+
+electionSchema.index(
+  {
+    name: 1,
+    startDate: 1,
+    endDate: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
+// add raced? field to verify the election is over
+electionSchema.virtual("raced").get(function () {
+  return Date.now() > this.endDate;
+});
+
+const Election = mongoose.model("Election", electionSchema);
+module.exports = Election;
