@@ -12,6 +12,7 @@ const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const cors = require("cors");
 const passport = require("passport");
+const Pusher = require("pusher");
 
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
@@ -28,8 +29,8 @@ app.options("*", cors());
 //set http headers (need to be before any req res cycle)
 app.use(helmet());
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
+app.set("views", path.join(__dirname, "views"));
 
 if (process.env.NODE_ENV == "development") {
   app.use(logger("dev"));
@@ -49,7 +50,25 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 app.use(compression());
 
+app.get("/", function (req, res, next) {
+  res.render("index");
+});
 // API
+app.get("/api/testing", function (req, res, next) {
+  const pusher = new Pusher({
+    appId: process.env.PUSHER_APP_ID,
+    key: process.env.PUSHER_API_KEY,
+    secret: process.env.PUSHER_SECRET,
+    cluster: process.env.PUSHER_CLUSTER,
+  });
+
+  pusher.trigger("my-channel", "my-event", {
+    message: "hello world",
+  });
+  res.status(200).json({
+    status: "success",
+  });
+});
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
@@ -58,40 +77,5 @@ app.all("*", (req, res, next) => {
 
 // error handler
 app.use(globalErrorHandler);
-
-module.exports = app;
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-
-var app = express();
-
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
-});
 
 module.exports = app;
