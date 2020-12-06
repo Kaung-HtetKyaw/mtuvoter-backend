@@ -6,7 +6,7 @@ module.exports = class Email {
   constructor(user, url) {
     this.firstName = user.name.split(" ");
     this.to = user.email;
-    this.from = `MTU Code Lab <${process.env.COMPANY_EMAIL}>`;
+    this.from = `MTU VOTER <${process.env.ORG_EMAIL}>`;
     this.url = url;
   }
   createNewTransport() {
@@ -21,11 +21,11 @@ module.exports = class Email {
     }
 
     return nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
+      host: process.env.MAILTRAP_HOST,
+      port: process.env.MAILTRAP_PORT,
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASSWORD,
       },
     });
   }
@@ -45,7 +45,7 @@ module.exports = class Email {
     await this.createNewTransport().sendMail(mailOptions);
   }
   async sendWelcome() {
-    await this.send("welcome", "Welcome to MTU Code Lab Community");
+    await this.send("welcome", "Welcome to MTU Voter");
   }
   async sendVerfication() {
     await this.send("verify", "Plesae verfiy your account");

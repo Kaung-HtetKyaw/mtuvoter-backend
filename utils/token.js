@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 exports.generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
   });
 };
 

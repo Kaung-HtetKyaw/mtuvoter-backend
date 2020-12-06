@@ -15,6 +15,7 @@ const passport = require("passport");
 
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
+const userRouter = require("./routes/users");
 
 const { minutes } = require("./utils/time");
 
@@ -50,6 +51,7 @@ app.use("/api", limiter);
 app.use(compression());
 
 // API
+app.use("/api/v1/users", userRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {

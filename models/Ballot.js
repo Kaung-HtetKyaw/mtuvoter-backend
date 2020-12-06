@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ballotSchema = new mongoose.Schema({
-  _voter: {
+  _user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: [true, "Ballot must have an user"],
@@ -16,6 +16,11 @@ const ballotSchema = new mongoose.Schema({
     ref: "Election",
     required: [true, "Ballot must belong to an election"],
   },
+  _candidate: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Candidate",
+    required: [true, "Ballot must be vote for a candidate"],
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -23,3 +28,4 @@ const ballotSchema = new mongoose.Schema({
 });
 
 const Ballot = mongoose.model("Ballot", ballotSchema);
+module.exports = Ballot;

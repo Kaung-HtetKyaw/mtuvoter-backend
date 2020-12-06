@@ -5,6 +5,7 @@ const electionSchema = new mongoose.Schema({
     type: String,
     required: [true, "An election must have a name"],
   },
+  // new Date('2020-12-12:06:00:00')
   startDate: {
     type: Date,
     required: [true, "Election must have a start date"],
@@ -48,7 +49,10 @@ electionSchema.virtual("raced").get(function () {
 });
 
 // <TODO> virtual populate the post for a election
-// <TODO> add slug 
+
+electionSchema.virtual;
+
+// <TODO> add slug
 
 const Election = mongoose.model("Election", electionSchema);
 module.exports = Election;
