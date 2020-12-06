@@ -38,6 +38,7 @@ function sendErrorDev(error, req, res) {
   }
   // error from rendered website
   return res.status(error.statusCode).render("error", {
+    status: error.status,
     title: "Something went wrong",
     message: error.message,
   });

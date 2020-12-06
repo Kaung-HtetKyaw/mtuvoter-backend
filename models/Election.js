@@ -47,5 +47,8 @@ electionSchema.virtual("raced").get(function () {
   return Date.now() > this.endDate;
 });
 
+// <TODO> virtual populate the post for a election
+// <TODO> add slug 
+
 const Election = mongoose.model("Election", electionSchema);
 module.exports = Election;

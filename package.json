@@ -30,6 +30,6 @@
     "passport-google-oauth20": "^2.0.0",
     "pug": "^3.0.0",
     "slugify": "^1.4.6",
-    "validator": "^13.1.17"
+    "validator": "^13.5.1"
   }
 }
