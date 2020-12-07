@@ -5,66 +5,78 @@ const { seconds, minutes } = require("../utils/time");
 const { generateHashedAndUnhashedCryptoToken } = require("../utils/token");
 const { STUDENT_TYPE } = require("../utils/constants");
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, "User must provide an email address"],
-    validate: {
-      validator: isEmail,
-      message: "Invalid email address",
+const options = {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+};
+
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: [true, "User must provide an email address"],
+      validate: {
+        validator: isEmail,
+        // ! following validation will work but wont cover all the edge cases for mtu edu emails
+        // validator:function(value) {
+        //   return /.*\mtu.edu.mm$/.test(value);
+        // },
+        message: "Invalid email address",
+      },
+      unique: true,
     },
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, "Password cant be empty"],
-    select: false,
-  },
-  role: {
-    type: String,
-    default: "user",
-    enum: {
-      values: ["user", "mod", "admin"],
-      message: "Invalid user role",
+    password: {
+      type: String,
+      required: [true, "Password cant be empty"],
+      select: false,
     },
-    select: false,
-  },
-  confirmedPassword: {
-    type: String,
-    required: [true, "Conrimed Password can't be empty"],
-    validate: {
-      validator: function (value) {
-        return this.password === value;
+    role: {
+      type: String,
+      default: "user",
+      enum: {
+        values: ["user", "mod", "admin"],
+        message: "Invalid user role",
+      },
+      select: false,
+    },
+    confirmedPassword: {
+      type: String,
+      required: [true, "Conrimed Password can't be empty"],
+      validate: {
+        validator: function (value) {
+          return this.password === value;
+        },
+      },
+      select: false,
+    },
+    passwordChangedAt: Date,
+    photo: {
+      type: String,
+      default: "default.jpg",
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    passwordResetToken: String,
+    passwordResetExpiresAt: Date,
+    verifyToken: String,
+    verifyTokenExpiresAt: Date,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    student_type: {
+      type: String,
+      required: [true, "Provide the current year you are attending"],
+      enum: {
+        values: STUDENT_TYPE,
+        message: "Invalid student year",
       },
     },
-    select: false,
   },
-  passwordChangedAt: Date,
-  photo: {
-    type: String,
-    default: "default.jpg",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  passwordResetToken: String,
-  passwordResetExpiresAt: Date,
-  verifyToken: String,
-  verifyTokenExpiresAt: Date,
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  student_type: {
-    type: String,
-    required: [true, "Provide the current year you are attending"],
-    enum: {
-      values: STUDENT_TYPE,
-      message: "Invalid student year",
-    },
-  },
-});
+  options
+);
 
 userSchema.virtual("name").get(function () {
   return this.email.split("@")[0];

@@ -9,8 +9,6 @@ const {
 } = require("../utils/token");
 const { days } = require("../utils/time");
 const Email = require("../services/Email");
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
 
 exports.signup = catchAsyncError(async (req, res, next) => {
   const { email, password, confirmedPassword, student_type } = req.body;

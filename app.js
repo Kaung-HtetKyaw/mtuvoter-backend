@@ -16,6 +16,7 @@ const passport = require("passport");
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
 const userRouter = require("./routes/users");
+const electionRouter = require("./routes/elections");
 
 const { minutes } = require("./utils/time");
 
@@ -52,6 +53,7 @@ app.use(compression());
 
 // API
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/elections", electionRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {

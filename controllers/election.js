@@ -1,5 +1,8 @@
 const AppError = require("../utils/AppError");
 const { catchAsyncError } = require("../utils/error");
 const Election = require("../models/Election");
+const handler = require("../factory/handler");
 
-exports.createElection = catchAsyncError(async (req, res, next) => {});
+exports.createElection = handler.createOne(Election);
+exports.updateElection = handler.updateOne(Election);
+exports.getElection = handler.getOne(Election);

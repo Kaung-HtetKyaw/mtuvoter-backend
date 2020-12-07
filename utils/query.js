@@ -20,7 +20,7 @@ exports.normalizeQueryString = (queryString, excluded_query) => {
   return result;
 };
 
-exports.getQueryFromParam = (Model, param) => {
+exports.getQueryByParam = (Model, param) => {
   if (param.split("-").length > 1) {
     return Model.findOne({ slug: param });
   }
