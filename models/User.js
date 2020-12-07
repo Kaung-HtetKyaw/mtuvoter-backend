@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const bcrypt = require("bcryptjs");
-const bcrypt_salt = process.env.BCRYPT_SALT;
 const { seconds, minutes } = require("../utils/time");
 const { generateHashedAndUnhashedCryptoToken } = require("../utils/token");
 const { STUDENT_TYPE } = require("../utils/constants");
@@ -19,6 +18,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password cant be empty"],
+    select: false,
   },
   role: {
     type: String,
@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
       values: ["user", "mod", "admin"],
       message: "Invalid user role",
     },
+    select: false,
   },
   confirmedPassword: {
     type: String,
@@ -36,6 +37,7 @@ const userSchema = new mongoose.Schema({
         return this.password === value;
       },
     },
+    select: false,
   },
   passwordChangedAt: Date,
   photo: {
@@ -70,9 +72,11 @@ userSchema.virtual("name").get(function () {
 
 // only hash the password if the password is updated or new
 userSchema.pre("save", async function (next) {
-  console.log(bcrypt_salt);
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(process.env.BCRYPT_SALT)
+  );
   this.confirmedPassword = undefined;
   next();
 });

@@ -3,11 +3,14 @@ const User = require("../models/User");
 
 const { getBaseUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
-const { generateToken } = require("../utils/token");
+const {
+  generateToken,
+  convertUnhashedToHashedCryptoToken,
+} = require("../utils/token");
 const { days } = require("../utils/time");
 const Email = require("../services/Email");
 const crypto = require("crypto");
-const { get } = require("http");
+const bcrypt = require("bcryptjs");
 
 exports.signup = catchAsyncError(async (req, res, next) => {
   const { email, password, confirmedPassword, student_type } = req.body;
@@ -21,10 +24,7 @@ exports.signup = catchAsyncError(async (req, res, next) => {
 });
 
 exports.verify = catchAsyncError(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash(process.env.CRYPTO_ALGO)
-    .update(req.params.token)
-    .digest("hex");
+  const hashedToken = convertUnhashedToHashedCryptoToken(req.params.token);
   let user = await User.findOne({
     verifyToken: hashedToken,
     verifyTokenExpiresAt: { $gt: Date.now() },
@@ -58,7 +58,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError("Please provide both email and password"));
   }
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return next(new AppError("Invalid email or password", 404));
   }
@@ -75,6 +75,80 @@ exports.login = catchAsyncError(async (req, res, next) => {
   await createTokenAndRespond(user, req, res, 200, true);
 });
 
+exports.forgotPassword = catchAsyncError(async (req, res, next) => {
+  if (!req.body.email) {
+    return next(new AppError("Please provide email address"));
+  }
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError(`There is no user with email ${req.body.email}`));
+  }
+  try {
+    const resetToken = user.generateResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+    const url = `${getBaseUrl(req)}/users/reset/${resetToken}`;
+    await new Email(user, url).sendPasswordReset();
+    res.status(200).json({
+      status: "success",
+      message: "Password reset link has been sent to you email address",
+    });
+  } catch (error) {
+    console.log(error);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpiresAt = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError("Error sending email", 500));
+  }
+});
+
+exports.resetPassword = catchAsyncError(async (req, res, next) => {
+  const { email, password, confirmedPassword } = req.body;
+  if (!email || !password || !confirmedPassword) {
+    return next(
+      new AppError("Please provide email, password and confirmedPassword", 400)
+    );
+  }
+  const user = await User.findOne({
+    email,
+    passwordResetToken: convertUnhashedToHashedCryptoToken(req.params.token),
+    passwordResetExpiresAt: { $gt: Date.now() },
+  }).select("+password");
+  if (!user) {
+    return next(new AppError("Invalid email or token", 404));
+  }
+  // update password and validate again for password encryption
+  user.password = password;
+  user.confirmedPassword = confirmedPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpiresAt = undefined;
+  await user.save();
+  await createTokenAndRespond(user, req, res, 200, true);
+});
+exports.updatePassword = catchAsyncError(async (req, res, next) => {
+  const { email, oldPassword, newPassword, confirmedPassword } = req.body;
+  if (!email || !oldPassword || !newPassword || !confirmedPassword) {
+    return next(
+      new AppError(
+        "Please email, oldPassword, newPassword, confirmedPassword",
+        400
+      )
+    );
+  }
+  const user = await User.findOne({ email }).select("+password");
+  const isPasswordCorrect = await user.isCorrectPassword(
+    oldPassword,
+    user.password
+  );
+  if (!user || !isPasswordCorrect) {
+    return next(new AppError("Invalid email or password", 404));
+  }
+  user.password = newPassword;
+  user.confirmedPassword = confirmedPassword;
+  await user.save();
+
+  await createTokenAndRespond(user, req, res, 200, false);
+});
+
 // issue jwt token and respond back
 function createTokenAndRespond(user, req, res, statusCode, includeData) {
   const token = generateToken({ id: user._id });
@@ -83,6 +157,7 @@ function createTokenAndRespond(user, req, res, statusCode, includeData) {
     token,
   };
   if (includeData) {
+    user.password = undefined;
     response.data = user;
   }
   let cookieOptions = {

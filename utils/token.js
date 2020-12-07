@@ -24,3 +24,10 @@ exports.generateHashedAndUnhashedCryptoToken = (algorithm) => {
   const hashed = crypto.createHash(algorithm).update(unhashed).digest("hex");
   return { unhashed, hashed };
 };
+
+exports.convertUnhashedToHashedCryptoToken = (unhashed) => {
+  return crypto
+    .createHash(process.env.CRYPTO_ALGO)
+    .update(unhashed)
+    .digest("hex");
+};
