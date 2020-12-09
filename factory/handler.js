@@ -1,6 +1,7 @@
 const { catchAsyncError } = require("../utils/error");
 const { getQueryByParam } = require("../utils/query");
 const AppError = require("../utils/AppError");
+const APIFeatures = require("../factory/API_Features");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
@@ -44,6 +45,32 @@ exports.updateOne = (Model) => {
     res.status(200).json({
       status: "success",
       data: doc,
+    });
+  });
+};
+
+exports.getAll = (Model, filterCb) => {
+  return catchAsyncError(async (req, res, next) => {
+    let filter = filterCb ? filterCb(req) : {};
+    const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .limitFields()
+      .sort()
+      .paginate();
+    const docs = await features.query;
+    res.status(200).json({
+      status: "success",
+      data: docs,
+    });
+  });
+};
+
+exports.deleteOne = (Model) => {
+  return catchAsyncError(async (req, res, next) => {
+    await Model.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: "success",
+      data: null,
     });
   });
 };

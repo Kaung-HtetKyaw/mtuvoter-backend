@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const { promisify } = require("util");
 
 exports.generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -14,9 +15,9 @@ exports.getTokenFromCookieOrHeader = (req) => {
   ) {
     return req.headers.authorization.split(" ")[1];
   }
-  //    else if (req.cookies.jwt) {
-  //     return req.cookies.jwt;
-  //   }
+  //  else if (req.cookies.jwt) {
+  //   return req.cookies.jwt;
+  // }
 };
 
 exports.generateHashedAndUnhashedCryptoToken = (algorithm) => {
@@ -30,4 +31,8 @@ exports.convertUnhashedToHashedCryptoToken = (unhashed) => {
     .createHash(process.env.CRYPTO_ALGO)
     .update(unhashed)
     .digest("hex");
+};
+
+exports.verifyJwtToken = async (token) => {
+  return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 };

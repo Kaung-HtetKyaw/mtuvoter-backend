@@ -1,14 +1,58 @@
 const AppError = require("../utils/AppError");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const { verifyJwtToken } = require("../utils/token");
 
 const { getBaseUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
 const {
   generateToken,
   convertUnhashedToHashedCryptoToken,
+  getTokenFromCookieOrHeader,
 } = require("../utils/token");
 const { days } = require("../utils/time");
 const Email = require("../services/Email");
+
+exports.protect = catchAsyncError(async (req, res, next) => {
+  const token = getTokenFromCookieOrHeader(req);
+  if (!token) {
+    return next(
+      new AppError("You are not logged in. Please log in to continue", 401)
+    );
+  }
+  const decodedJwt = await verifyJwtToken(token);
+  const user = await User.findById(decodedJwt.id).select("+role");
+  if (!user) {
+    return next(new AppError("User does not exist", 404));
+  }
+  const pwdChangedAfterJwtIssued = user.passwordChangedAfterIssued(
+    decodedJwt.iat
+  );
+  if (pwdChangedAfterJwtIssued) {
+    return next(
+      new AppError(
+        "You recently changed the password. Please log in again",
+        401
+      )
+    );
+  }
+  req.user = user;
+  res.locals.user = user;
+  next();
+});
+
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    console.log(req.user.role);
+    console.log(roles);
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("You are not authorized to perform this action", 401)
+      );
+    }
+    next();
+  };
+};
 
 exports.signup = catchAsyncError(async (req, res, next) => {
   const { email, password, confirmedPassword, student_type } = req.body;

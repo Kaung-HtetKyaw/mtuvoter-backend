@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
+const Election = require("./Election");
+const Post = require("./Post");
 
 const options = {
   toJSON: { virtuals: true },
@@ -55,5 +57,18 @@ const candidateSchema = new mongoose.Schema(
   options
 );
 
+candidateSchema.path("_election").validate({
+  validator: function (value) {
+    return Election.exists({ _id: mongoose.Types.ObjectId(value) });
+  },
+  message: "Cannot find related election",
+});
+
+candidateSchema.path("_post").validate({
+  validator: function (value) {
+    return Post.exists({ _id: mongoose.Types.ObjectId(value) });
+  },
+  message: "Cannot find related election",
+});
 const Candidate = mongoose.model("Candidate", candidateSchema);
 module.exports = Candidate;

@@ -106,7 +106,7 @@ userSchema.methods.isCorrectPassword = async function (plain, hash) {
 };
 
 // checking if password was changed after jwt token was issued
-userSchema.methods.passwordChangedAfterIssued = async function (iat) {
+userSchema.methods.passwordChangedAfterIssued = function (iat) {
   if (this.passwordChangedAt) {
     const pwdChangedTime = parseInt(
       this.passwordChangedAt.getTime() / seconds(1),

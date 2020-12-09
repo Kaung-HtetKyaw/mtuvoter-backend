@@ -11,12 +11,17 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const cors = require("cors");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 const passport = require("passport");
 
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
+// routers
 const userRouter = require("./routes/users");
 const electionRouter = require("./routes/elections");
+const candidateRouter = require("./routes/candidate");
+const positionRouter = require("./routes/position");
 
 const { minutes } = require("./utils/time");
 
@@ -42,6 +47,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// data sanitization (should be after body parser to clean after the body is parsed)
+// against NOSQL query injections
+app.use(mongoSanitize());
+// against XSS
+app.use(xss());
+
 // rate limiting
 const limiter = rateLimit({
   max: 800,
@@ -54,6 +65,8 @@ app.use(compression());
 // API
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/elections", electionRouter);
+app.use("/api/v1/positions", positionRouter);
+app.use("/api/v1/candidates", candidateRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
