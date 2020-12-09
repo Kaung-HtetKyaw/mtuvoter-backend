@@ -11,3 +11,31 @@ exports.getElection = handler.getOne(Election, {
 });
 exports.getALlElections = handler.getAll(Election);
 exports.deleteElection = handler.deleteOne(Election);
+
+exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {
+  const electionId = req.params.id || req.params.election;
+  const election = await Election.findById(electionId).select("+startDate");
+  if (Date.now() > election.startDate) {
+    return next(
+      new AppError(
+        "You cannot perform this action because election has already started",
+        400
+      )
+    );
+  }
+  next();
+});
+
+exports.raced = catchAsyncError(async (req, res, next) => {
+  const electionId = req.params.id || req.params.election;
+  const election = await Election.findById(electionId).select("+startDate");
+  if (Date.now() < election.startDate) {
+    return next(
+      new AppError(
+        "You cannot perform this action because election has been called reaced",
+        400
+      )
+    );
+  }
+  next();
+});

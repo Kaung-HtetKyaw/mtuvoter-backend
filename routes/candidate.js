@@ -3,14 +3,20 @@ const router = express.Router({ mergeParams: true });
 
 const candidateController = require("../controllers/candidate");
 const authController = require("../controllers/auth");
+const electionController = require("../controllers/election");
 
+router.route("/").get(candidateController.getCandidatesByElection);
+
+router.use(authController.protect, authController.authorize("admin"));
 router
   .route("/")
-  .post(
-    authController.protect,
-    authController.authorize("admin"),
-    candidateController.createCandidate
-  )
+  .post(candidateController.createCandidate)
   .get(candidateController.getCandidatesByElection);
+router
+  .route("/:id")
+  .patch(
+    electionController.hasElectionStarted,
+    candidateController.updateCandidate
+  );
 
 module.exports = router;
