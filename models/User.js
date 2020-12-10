@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { seconds, minutes } = require("../utils/time");
 const { generateHashedAndUnhashedCryptoToken } = require("../utils/token");
 const { STUDENT_TYPE } = require("../utils/constants");
+const Token = require("./Token");
 
 const options = {
   toJSON: { virtuals: true },
@@ -14,16 +15,18 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, "User must provide an email address"],
       validate: {
         validator: isEmail,
         // ! following validation will work but wont cover all the edge cases for mtu edu emails
-        // validator:function(value) {
+        // validator:function(value) {`
         //   return /.*\mtu.edu.mm$/.test(value);
         // },
         message: "Invalid email address",
       },
-      unique: true,
+    },
+    name: {
+      type: String,
+      required: [true, "Please provide a username"],
     },
     password: {
       type: String,
@@ -74,13 +77,31 @@ const userSchema = new mongoose.Schema(
         message: "Invalid student year",
       },
     },
+    type: {
+      type: String,
+      default: "user",
+      enum: {
+        values: ["user", "guest"],
+        message: "Invalid account type",
+      },
+    },
+    _v_t: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Token",
+    },
   },
   options
 );
 
-userSchema.virtual("name").get(function () {
-  return this.email.split("@")[0];
-});
+userSchema.index(
+  {
+    email: 1,
+    SID: 1,
+  },
+  {
+    unique: true,
+  }
+);
 
 // only hash the password if the password is updated or new
 userSchema.pre("save", async function (next) {
@@ -118,14 +139,20 @@ userSchema.methods.passwordChangedAfterIssued = function (iat) {
 };
 
 userSchema.methods.generateResetPasswordToken = function () {
-  const { unhashed, hashed } = generateHashedAndUnhashedCryptoToken("sha256");
+  const { unhashed, hashed } = generateHashedAndUnhashedCryptoToken(
+    process.env.CRYPTO_ALGO,
+    process.env.CRYPTO_BYTES_DEFAULT
+  );
   this.passwordResetToken = hashed;
   this.passwordResetExpiresAt = Date.now() + minutes(10);
   return unhashed;
 };
 
 userSchema.methods.generateVerifyToken = function () {
-  const { unhashed, hashed } = generateHashedAndUnhashedCryptoToken("sha256");
+  const { unhashed, hashed } = generateHashedAndUnhashedCryptoToken(
+    process.env.CRYPTO_ALGO,
+    process.env.CRYPTO_BYTES_DEFAULT
+  );
   this.verifyToken = hashed;
   this.verifyTokenExpiresAt = Date.now() + minutes(10);
   return unhashed;

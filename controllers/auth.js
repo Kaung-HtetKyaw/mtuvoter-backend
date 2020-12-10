@@ -1,20 +1,22 @@
 const AppError = require("../utils/AppError");
 const User = require("../models/User");
+const Token = require("../models/Token");
 const jwt = require("jsonwebtoken");
 const { verifyJwtToken } = require("../utils/token");
 
 const { getBaseUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
 const {
-  generateToken,
   convertUnhashedToHashedCryptoToken,
-  getTokenFromCookieOrHeader,
+  getAuthTokenFromHeaderOrCookie,
+  createJWTCookie,
 } = require("../utils/token");
 const { days } = require("../utils/time");
 const Email = require("../services/Email");
+const { vote } = require("./vote");
 
 exports.protect = catchAsyncError(async (req, res, next) => {
-  const token = getTokenFromCookieOrHeader(req);
+  const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
   if (!token) {
     return next(
       new AppError("You are not logged in. Please log in to continue", 401)
@@ -55,13 +57,19 @@ exports.authorize = (...roles) => {
 };
 
 exports.signup = catchAsyncError(async (req, res, next) => {
-  const { email, password, confirmedPassword, student_type } = req.body;
+  const { email, password, confirmedPassword, student_type, name } = req.body;
   let user = await User.create({
     email,
     password,
     confirmedPassword,
     student_type,
+    name,
   });
+  // creating token here because creating in pre save hook will creat token everytime updating user happens like updat password, creating tokens
+  const vote_token = await Token.create({});
+  user._v_t = vote_token._id;
+
+  // send verification mail
   await createVerifyTokenAndSendMail(user, req, res, next);
 });
 
@@ -82,13 +90,21 @@ exports.verify = catchAsyncError(async (req, res, next) => {
   user.verifyToken = undefined;
   user.verifyTokenExpiresAt = undefined;
   await user.save({ validateBeforeSave: false });
-
+  // create token for voting
+  const votintTokenJWT = await createJWTCookie(
+    { id: user._v_t },
+    req,
+    res,
+    "_v_t",
+    days(1)
+  );
   try {
     const url = `${getBaseUrl(req)}/users/me`;
     await new Email(user, url).sendWelcome();
     res.status(200).json({
       status: "success",
       data: user,
+      _v_t: votintTokenJWT,
     });
   } catch (error) {
     return next(new AppError("Error Sending Mail", 500));
@@ -114,7 +130,53 @@ exports.login = catchAsyncError(async (req, res, next) => {
   if (user.verified === false) {
     return await createVerifyTokenAndSendMail(user, req, res, next);
   }
-  await createTokenAndRespond(user, req, res, 200, true);
+  // exclude passwrod from res
+  user.password = undefined;
+  const auth_token = createJWTCookie({ id: user._id }, req, res, "jwt");
+  const vote_token = createJWTCookie(
+    { id: user._v_t },
+    req,
+    res,
+    "_v_t",
+    days(1)
+  );
+  res.status(200).json({
+    status: "success",
+    token: auth_token,
+    _v_t: vote_token,
+    data: user,
+  });
+});
+
+// guest login provide onetime token usage for a election
+exports.guestLogin = catchAsyncError(async (req, res, next) => {
+  const auth_token = getAuthTokenFromHeaderOrCookie(req, "jwt");
+  console.log(auth_token);
+  if (auth_token) {
+    return next(
+      new AppError("Guest login is not available for authenticated user", 400)
+    );
+  }
+
+  if (!req.body.vote_token) {
+    return next(new AppError("Please provide voting token", 400));
+  }
+  const hashed = convertUnhashedToHashedCryptoToken(req.body.vote_token);
+  const token = await Token.findOne({ token: hashed });
+  if (!token) {
+    return next(new AppError("Invalid voting token", 400));
+  }
+  const votingTokenJWT = await createJWTCookie(
+    { id: token._id },
+    req,
+    res,
+    "_v_t",
+    days(1)
+  );
+  res.status(200).json({
+    status: "success",
+    _v_t: votingTokenJWT,
+  });
 });
 
 exports.forgotPassword = catchAsyncError(async (req, res, next) => {
@@ -164,7 +226,14 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpiresAt = undefined;
   await user.save();
-  await createTokenAndRespond(user, req, res, 200, true);
+  // excluding password from response
+  user.password = undefined;
+  const token = createJWTCookie({ user: _id }, req, res, "jwt");
+  res.status(200).json({
+    status: "success",
+    token,
+    data: user,
+  });
 });
 exports.updatePassword = catchAsyncError(async (req, res, next) => {
   const { email, oldPassword, newPassword, confirmedPassword } = req.body;
@@ -188,33 +257,18 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   user.confirmedPassword = confirmedPassword;
   await user.save();
 
-  await createTokenAndRespond(user, req, res, 200, false);
-});
-
-// issue jwt token and respond back
-function createTokenAndRespond(user, req, res, statusCode, includeData) {
-  const token = generateToken({ id: user._id });
-  let response = {
+  const token = createJWTCookie({ id: user._id }, req, res, "jwt");
+  res.status(200).json({
     status: "success",
     token,
-  };
-  if (includeData) {
-    user.password = undefined;
-    response.data = user;
-  }
-  let cookieOptions = {
-    expires: new Date(Date.now() + days(60)),
-    httpOnly: true,
-    //  secure: req.secure || req.headers["x-forwarded-proto"] === "https", //* heroku specific
-  };
-  res.cookie("jwt", token, cookieOptions);
-  res.status(statusCode).json(response);
-}
+  });
+});
 
 async function createVerifyTokenAndSendMail(user, req, res, next) {
   try {
     const verifyToken = user.generateVerifyToken();
     await user.save({ validateBeforeSave: false });
+    // generate frontend url to display the verfication page
     const url = `${getBaseUrl(req)}/api/v1/users/verify/${verifyToken}`;
     await new Email(user, url).sendVerfication();
     res.status(200).json({

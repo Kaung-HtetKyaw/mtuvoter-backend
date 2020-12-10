@@ -25,17 +25,3 @@ exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {
   }
   next();
 });
-
-exports.raced = catchAsyncError(async (req, res, next) => {
-  const electionId = req.params.id || req.params.election;
-  const election = await Election.findById(electionId).select("+startDate");
-  if (Date.now() < election.startDate) {
-    return next(
-      new AppError(
-        "You cannot perform this action because election has been called reaced",
-        400
-      )
-    );
-  }
-  next();
-});

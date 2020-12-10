@@ -9,3 +9,5 @@ exports.STUDENT_TYPE = [
   "master",
   "phd",
 ];
+
+// <TODO> add engineering departments

@@ -14,7 +14,6 @@ const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const passport = require("passport");
-
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
 // routers
@@ -22,6 +21,8 @@ const userRouter = require("./routes/users");
 const electionRouter = require("./routes/elections");
 const candidateRouter = require("./routes/candidate");
 const positionRouter = require("./routes/position");
+const voteRouter = require("./routes/vote");
+const tokenRouter = require("./routes/token");
 
 const { minutes } = require("./utils/time");
 
@@ -67,6 +68,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/elections", electionRouter);
 app.use("/api/v1/positions", positionRouter);
 app.use("/api/v1/candidates", candidateRouter);
+app.use("/api/v1/vote", voteRouter);
+app.use("/api/v1/tokens", tokenRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
@@ -75,5 +78,4 @@ app.all("*", (req, res, next) => {
 
 // error handler
 app.use(globalErrorHandler);
-
 module.exports = app;
