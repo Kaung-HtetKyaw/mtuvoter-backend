@@ -1,5 +1,5 @@
-const { normalizeQueryString } = require("../query");
-const { makeMap, getPaginationDetail } = require("../utils");
+const { normalizeQueryString } = require("../utils/query");
+const { makeMap, getPaginationDetail } = require("../utils/utils");
 
 class APIFeatures {
   constructor(query, queryString) {

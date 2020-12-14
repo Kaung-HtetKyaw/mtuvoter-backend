@@ -11,11 +11,18 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const cors = require("cors");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 const passport = require("passport");
-const Pusher = require("pusher");
-
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
+// routers
+const userRouter = require("./routes/users");
+const electionRouter = require("./routes/elections");
+const candidateRouter = require("./routes/candidate");
+const positionRouter = require("./routes/position");
+const voteRouter = require("./routes/vote");
+const tokenRouter = require("./routes/token");
 
 const { minutes } = require("./utils/time");
 
@@ -41,6 +48,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// data sanitization (should be after body parser to clean after the body is parsed)
+// against NOSQL query injections
+app.use(mongoSanitize());
+// against XSS
+app.use(xss());
+
 // rate limiting
 const limiter = rateLimit({
   max: 800,
@@ -54,21 +67,13 @@ app.get("/", function (req, res, next) {
   res.render("index");
 });
 // API
-app.get("/api/testing", function (req, res, next) {
-  const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID,
-    key: process.env.PUSHER_API_KEY,
-    secret: process.env.PUSHER_SECRET,
-    cluster: process.env.PUSHER_CLUSTER,
-  });
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/elections", electionRouter);
+app.use("/api/v1/positions", positionRouter);
+app.use("/api/v1/candidates", candidateRouter);
+app.use("/api/v1/vote", voteRouter);
+app.use("/api/v1/tokens", tokenRouter);
 
-  pusher.trigger("my-channel", "my-event", {
-    message: "hello world",
-  });
-  res.status(200).json({
-    status: "success",
-  });
-});
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
