@@ -38,6 +38,7 @@ exports.updateCandidate = catchAsyncError(async (req, res, next) => {
       _election: mongoose.Types.ObjectId(election),
       _post: mongoose.Types.ObjectId(position),
       _id: mongoose.Types.ObjectId(id),
+      photo: req.file.filename,
     },
     {
       new: true,

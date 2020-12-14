@@ -22,6 +22,7 @@ const candidateSchema = new mongoose.Schema(
         validator: isEmail,
         message: "Invalid email address",
       },
+      unique: true,
     },
     social: [
       {
@@ -33,7 +34,7 @@ const candidateSchema = new mongoose.Schema(
     ],
     photo: {
       type: String,
-      default: "default.jpg",
+      required: [true, "Please provide candidate photo"],
     },
     type: {
       type: String,

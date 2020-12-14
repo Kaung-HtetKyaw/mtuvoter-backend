@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { STUDENT_TYPE } = require("../utils/constants");
 
 const ballotSchema = new mongoose.Schema({
   _v_t: {
@@ -20,6 +21,14 @@ const ballotSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Candidate",
     required: [true, "Ballot must be vote for a candidate"],
+  },
+  student_type: {
+    type: String,
+    required: [true, "Provide the current year you are attending"],
+    enum: {
+      values: STUDENT_TYPE,
+      message: "Invalid student year",
+    },
   },
   createdAt: {
     type: Date,

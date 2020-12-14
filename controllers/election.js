@@ -13,7 +13,9 @@ exports.getALlElections = handler.getAll(Election);
 exports.deleteElection = handler.deleteOne(Election);
 
 exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {
-  const electionId = req.params.id || req.params.election;
+  // make sure election comes first
+  const electionId = req.params.election || req.params.id;
+  console.log(electionId);
   const election = await Election.findById(electionId).select("+startDate");
   if (Date.now() > election.startDate) {
     return next(

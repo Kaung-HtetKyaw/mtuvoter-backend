@@ -20,6 +20,8 @@ router
   .route("/:id")
   .patch(
     electionController.hasElectionStarted,
+    candidateController.convertFileToBuffer,
+    candidateController.uploadFile,
     candidateController.updateCandidate
   );
 
