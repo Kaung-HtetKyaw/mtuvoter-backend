@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authController = require("../controllers/auth");
 const userController = require("../controllers/user");
+const voteController = require("../controllers/vote");
 
 router.route("/signup").post(authController.signup);
 router.route("/verify/:token").patch(authController.verify);
@@ -13,5 +14,6 @@ router.route("/updatePassword").patch(authController.updatePassword);
 router.route("/guest").get(authController.guestLogin);
 
 router.use(authController.protect);
+router.route("/vote-status").get(userController.getVoteStatus);
 
 module.exports = router;

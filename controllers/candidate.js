@@ -4,13 +4,27 @@ const { catchAsyncError } = require("../utils/error");
 const Candidate = require("../models/Candidate");
 const Ballot = require("../models/Ballot");
 const handler = require("../factory/handler");
+const Storage = require("../services/Storage/Storage");
+
+const { v4: uuid } = require("uuid");
+
+const storage = new Storage({ width: 500, height: 500 });
+const multerUpload = storage.createMulterUpload();
+
+exports.convertFileToBuffer = multerUpload.single("photo");
+
+exports.uploadFile = handler.uploadFile(storage, "candidates", Candidate);
 
 exports.createCandidate = catchAsyncError(async (req, res, next) => {
   const candidate = await Candidate.create({
     ...req.body,
     _election: req.params.election,
     _post: req.params.position,
+    photo: req.file.filename,
   });
+  if (!req.file) {
+    return next(new AppError("Please upload candidate photo", 400));
+  }
   res.status(201).json({
     status: "success",
     data: candidate,

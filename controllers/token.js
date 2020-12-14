@@ -1,7 +1,6 @@
 const AppError = require("../utils/AppError");
 const { catchAsyncError } = require("../utils/error");
 const { generateHashedAndUnhashedCryptoToken } = require("../utils/token");
-const User = require("../models/User");
 const Token = require("../models/Token");
 
 exports.createVoteToken = catchAsyncError(async (req, res, next) => {

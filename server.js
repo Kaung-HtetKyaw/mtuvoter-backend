@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./aws-cred.env" });
 const mongoose = require("mongoose");
 
 // put this before the app is initialized

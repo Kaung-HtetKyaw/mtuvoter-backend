@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const { catchAsyncError } = require("../utils/utils");
-const { getCookieFromRequest, verifyJwtToken } = require("../utils/token");
+const {
+  getCookieFromRequest,
+  verifyJwtToken,
+  getAuthTokenFromHeaderOrCookie,
+} = require("../utils/token");
 const { promisify } = require("util");
 const Election = require("../models/Election");
 const AppError = require("../utils/AppError");
@@ -28,7 +32,11 @@ exports.raced = catchAsyncError(async (req, res, next) => {
 exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
   const votingToken = getCookieFromRequest(req, "_v_t");
   if (!votingToken) {
-    return next(new AppError("You don't have token to vote"));
+    return next(
+      new AppError(
+        "Your token might have been expired. Please log in again to vote."
+      )
+    );
   }
   const decodedToken = await verifyJwtToken(votingToken);
   req.voting_token_id = decodedToken.id;
@@ -36,9 +44,6 @@ exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
 });
 
 exports.hasVoted = catchAsyncError(async (req, res, next) => {
-  if (!req.voting_token_id) {
-    return next(new AppError("You dont have token to vote", 400));
-  }
   const {
     election: _election,
     position: _post,
@@ -51,12 +56,6 @@ exports.hasVoted = catchAsyncError(async (req, res, next) => {
     _candidate,
   });
   if (hasAlreadyVoted) {
-    if (req.user) {
-      return res.status(400).json({
-        status: "error",
-        message: "You have already voted for this position of the election",
-      });
-    }
     return next(new AppError("You have already voted for this candidate", 400));
   }
   next();

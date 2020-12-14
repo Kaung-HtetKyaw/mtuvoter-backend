@@ -2,6 +2,8 @@ const { catchAsyncError } = require("../utils/error");
 const { getQueryByParam } = require("../utils/query");
 const AppError = require("../utils/AppError");
 const APIFeatures = require("../factory/API_Features");
+const Storage = require("../services/Storage/Storage");
+const { v4: uuid } = require("uuid");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
@@ -81,3 +83,25 @@ function removeElectionTypeFromBody(req) {
   }
   return req.body;
 }
+
+exports.uploadFile = (storage, type, Model) => {
+  return catchAsyncError(async (req, res, next) => {
+    let filename = `${uuid()}.jpeg`;
+    if (req.params.id) {
+      const doc = await Model.findById(req.params.id).select("+photo");
+      filename = doc.photo;
+    }
+    // upload file to local machine
+    await storage
+      .upload(req.file.buffer, filename, type)
+      .then(() => {
+        req.file.filename = filename;
+      })
+      .catch((err) => {
+        console.log(err);
+        return next(new AppError("Error uploading image", 500));
+      });
+
+    return next();
+  });
+};

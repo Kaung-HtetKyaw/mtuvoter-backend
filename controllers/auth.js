@@ -13,7 +13,6 @@ const {
 } = require("../utils/token");
 const { days } = require("../utils/time");
 const Email = require("../services/Email");
-const { vote } = require("./vote");
 
 exports.protect = catchAsyncError(async (req, res, next) => {
   const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
@@ -151,7 +150,6 @@ exports.login = catchAsyncError(async (req, res, next) => {
 // guest login provide onetime token usage for a election
 exports.guestLogin = catchAsyncError(async (req, res, next) => {
   const auth_token = getAuthTokenFromHeaderOrCookie(req, "jwt");
-  console.log(auth_token);
   if (auth_token) {
     return next(
       new AppError("Guest login is not available for authenticated user", 400)

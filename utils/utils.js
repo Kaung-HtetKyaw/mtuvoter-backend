@@ -29,3 +29,5 @@ exports.getPaginationDetail = (limit, page) => {
 exports.capitalize = (string) => {
   return string[0].toUpperCase() + string.slice(1);
 };
+
+exports.noop = () => {};
