@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Token = require("../models/Token");
 const jwt = require("jsonwebtoken");
 const { verifyJwtToken } = require("../utils/token");
+const { createVerifyTokenAndSendMail } = require("../utils/email");
 
 const { getBaseUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
@@ -261,23 +262,3 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
     token,
   });
 });
-
-async function createVerifyTokenAndSendMail(user, req, res, next) {
-  try {
-    const verifyToken = user.generateVerifyToken();
-    await user.save({ validateBeforeSave: false });
-    // generate frontend url to display the verfication page
-    const url = `${getBaseUrl(req)}/api/v1/users/verify/${verifyToken}`;
-    await new Email(user, url).sendVerfication();
-    res.status(200).json({
-      status: "success",
-      message: "Verfication email has been sent to you email address",
-    });
-  } catch (error) {
-    console.log(error);
-    user.verifyToken = undefined;
-    user.verifyTokenExpiresAt = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(new AppError("Error Sending email", 500));
-  }
-}

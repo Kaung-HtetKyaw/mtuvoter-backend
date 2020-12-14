@@ -86,10 +86,14 @@ function removeElectionTypeFromBody(req) {
 
 exports.uploadFile = (storage, type, Model) => {
   return catchAsyncError(async (req, res, next) => {
+    if (!req.file) {
+      return next();
+    }
     let filename = `${uuid()}.jpeg`;
-    if (req.params.id) {
-      const doc = await Model.findById(req.params.id).select("+photo");
-      filename = doc.photo;
+    const docId = req.params.id || req.user.id;
+    if (docId) {
+      const doc = await Model.findById(docId).select("+photo");
+      if (doc.photo) filename = doc.photo;
     }
     // upload file to local machine
     await storage

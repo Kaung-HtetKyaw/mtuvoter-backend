@@ -31,3 +31,9 @@ exports.capitalize = (string) => {
 };
 
 exports.noop = () => {};
+exports.excludeFromBodyExcept = (body, ...fields) => {
+  for (const key in body) {
+    if (!fields.includes(key)) delete body[key];
+  }
+  return body;
+};

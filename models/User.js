@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
         // },
         message: "Invalid email address",
       },
+      unique: true,
     },
     name: {
       type: String,
@@ -55,7 +56,7 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     photo: {
       type: String,
-      default: "default.jpg",
+      required: [true, "Please upload a photo"],
     },
     createdAt: {
       type: Date,
@@ -69,22 +70,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    student_type: {
-      type: String,
-      required: [true, "Provide the current year you are attending"],
-      enum: {
-        values: STUDENT_TYPE,
-        message: "Invalid student year",
-      },
-    },
-    type: {
-      type: String,
-      default: "user",
-      enum: {
-        values: ["user", "guest"],
-        message: "Invalid account type",
-      },
-    },
     _v_t: {
       type: mongoose.Schema.ObjectId,
       ref: "Token",
@@ -96,7 +81,6 @@ const userSchema = new mongoose.Schema(
 userSchema.index(
   {
     email: 1,
-    SID: 1,
   },
   {
     unique: true,
