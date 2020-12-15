@@ -12,5 +12,9 @@ router.get(
   "/election-vote-by-student",
   ballotController.getBallotCountForElectionByStudent
 );
+router.get(
+  "/count-by-election/:election",
+  ballotController.getBallotCountByElection
+);
 
 module.exports = router;
