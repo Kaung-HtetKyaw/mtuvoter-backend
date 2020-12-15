@@ -4,6 +4,7 @@ const AppError = require("../utils/AppError");
 const APIFeatures = require("../factory/API_Features");
 const Storage = require("../services/Storage/Storage");
 const { v4: uuid } = require("uuid");
+const { noop } = require("../utils/utils");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
@@ -30,11 +31,12 @@ exports.getOne = (Model, populateOptions) => {
   });
 };
 
-exports.updateOne = (Model) => {
+exports.updateOne = (Model, filterCb = noop) => {
   return catchAsyncError(async (req, res, next) => {
+    const filter = filterCb(req) || req.params.id;
     let body = removeElectionTypeFromBody(req);
     const doc = await Model.findByIdAndUpdate(
-      req.params.id,
+      filter,
       { ...body },
       {
         new: true,

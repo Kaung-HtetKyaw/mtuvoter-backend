@@ -18,11 +18,13 @@ router
   .get(candidateController.getCandidatesByElection);
 router
   .route("/:id")
+  .get(candidateController.getCandidate)
   .patch(
     electionController.hasElectionStarted,
     candidateController.convertFileToBuffer,
     candidateController.uploadFile,
     candidateController.updateCandidate
-  );
+  )
+  .delete(candidateController.deleteCandidate);
 
 module.exports = router;
