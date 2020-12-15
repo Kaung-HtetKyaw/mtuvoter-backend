@@ -36,3 +36,32 @@ exports.getBallotCountForCandidateByStudent = catchAsyncError(
     });
   }
 );
+
+exports.getBallotCountForElectionByStudent = catchAsyncError(
+  async (req, res, next) => {
+    const result = await Ballot.aggregate([
+      {
+        $match: { _election: mongoose.Types.ObjectId(req.body.election) },
+      },
+      {
+        $group: {
+          _id: "$student_type",
+          vote_count: { $sum: 1 },
+        },
+      },
+      {
+        $addFields: { student_type: "$_id" },
+      },
+      {
+        $project: { _id: 0 },
+      },
+      {
+        $sort: { vote_count: -1 },
+      },
+    ]);
+    res.status(200).json({
+      status: "success",
+      data: result,
+    });
+  }
+);

@@ -12,7 +12,7 @@ const {
   getAuthTokenFromHeaderOrCookie,
   createJWTCookie,
 } = require("../utils/token");
-const { days } = require("../utils/time");
+const { days, seconds } = require("../utils/time");
 const Email = require("../services/Email");
 
 exports.protect = catchAsyncError(async (req, res, next) => {
@@ -148,6 +148,16 @@ exports.login = catchAsyncError(async (req, res, next) => {
     token: auth_token,
     _v_t: vote_token,
     data: user,
+  });
+});
+
+exports.logout = catchAsyncError(async (req, res, next) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + seconds(1)),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: "success",
   });
 });
 
