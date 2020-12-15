@@ -23,6 +23,7 @@ const candidateRouter = require("./routes/candidate");
 const positionRouter = require("./routes/position");
 const voteRouter = require("./routes/vote");
 const tokenRouter = require("./routes/token");
+const ballotRouter = require("./routes/ballot");
 
 const { minutes } = require("./utils/time");
 
@@ -70,6 +71,7 @@ app.use("/api/v1/positions", positionRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/vote", voteRouter);
 app.use("/api/v1/tokens", tokenRouter);
+app.use("/api/v1/ballots", ballotRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {

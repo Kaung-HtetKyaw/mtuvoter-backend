@@ -90,8 +90,8 @@ exports.uploadFile = (storage, type, Model) => {
       return next();
     }
     let filename = `${type}-${uuid()}.jpeg`;
-    const docId = req.params.id || req.user.id;
-    if (docId) {
+    if (req.method === "PATCH") {
+      const docId = req.params.id || req.user.id;
       const doc = await Model.findById(docId).select("+photo");
       if (doc.photo) filename = doc.photo;
     }
