@@ -56,7 +56,6 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     photo: {
       type: String,
-      required: [true, "Please upload a photo"],
     },
     createdAt: {
       type: Date,

@@ -12,7 +12,7 @@ const {
   getAuthTokenFromHeaderOrCookie,
   createJWTCookie,
 } = require("../utils/token");
-const { days } = require("../utils/time");
+const { days, seconds } = require("../utils/time");
 const Email = require("../services/Email");
 
 exports.protect = catchAsyncError(async (req, res, next) => {
@@ -57,6 +57,7 @@ exports.authorize = (...roles) => {
 };
 
 exports.signup = catchAsyncError(async (req, res, next) => {
+  console.log(req.body);
   const { email, password, confirmedPassword, student_type, name } = req.body;
   let user = await User.create({
     email,
@@ -98,6 +99,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
     "_v_t",
     days(1)
   );
+  const auth_token = createJWTCookie({ id: user._id }, req, res, "jwt");
   try {
     const url = `${getBaseUrl(req)}/users/me`;
     await new Email(user, url).sendWelcome();
@@ -105,6 +107,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
       status: "success",
       data: user,
       _v_t: votintTokenJWT,
+      token: auth_token,
     });
   } catch (error) {
     return next(new AppError("Error Sending Mail", 500));
@@ -145,6 +148,16 @@ exports.login = catchAsyncError(async (req, res, next) => {
     token: auth_token,
     _v_t: vote_token,
     data: user,
+  });
+});
+
+exports.logout = catchAsyncError(async (req, res, next) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + seconds(1)),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: "success",
   });
 });
 

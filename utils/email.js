@@ -1,4 +1,6 @@
 const Email = require("../services/Email");
+const AppError = require("./AppError");
+const { getBaseUrl } = require("./utils");
 
 exports.createVerifyTokenAndSendMail = async (user, req, res, next) => {
   try {
