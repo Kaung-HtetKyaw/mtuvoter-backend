@@ -45,8 +45,6 @@ exports.protect = catchAsyncError(async (req, res, next) => {
 
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    console.log(req.user.role);
-    console.log(roles);
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError("You are not authorized to perform this action", 401)
@@ -57,7 +55,6 @@ exports.authorize = (...roles) => {
 };
 
 exports.signup = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
   const { email, password, confirmedPassword, student_type, name } = req.body;
   let user = await User.create({
     email,

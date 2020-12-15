@@ -54,6 +54,10 @@ exports.updateCandidate = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getCandidate = handler.getOne(Candidate, {
+  path: "_election _post",
+});
 exports.getCandidatesByElection = handler.getAll(Candidate, (req) => {
   return { _election: mongoose.Types.ObjectId(req.params.election) };
 });
+exports.deleteCandidate = handler.deleteOne(Candidate);

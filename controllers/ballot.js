@@ -65,3 +65,11 @@ exports.getBallotCountForElectionByStudent = catchAsyncError(
     });
   }
 );
+
+exports.getBallotCountByElection = catchAsyncError(async (req, res, next) => {
+  const count = await Ballot.countDocuments({ _election: req.params.election });
+  res.status(200).json({
+    status: "success",
+    data: count,
+  });
+});

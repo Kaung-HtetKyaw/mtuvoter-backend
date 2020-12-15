@@ -28,5 +28,6 @@ exports.createPosition = catchAsyncError(async (req, res, next) => {
 exports.getPositionsByElection = handler.getAll(Position, (req) => {
   return { _election: mongoose.Types.ObjectId(req.params.election) };
 });
+exports.updatePosition = handler.updateOne(Position);
 
 exports.deletePosition = handler.deleteOne(Post);
