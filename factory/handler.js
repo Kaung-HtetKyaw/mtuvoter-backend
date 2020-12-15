@@ -89,7 +89,7 @@ exports.uploadFile = (storage, type, Model) => {
     if (!req.file) {
       return next();
     }
-    let filename = `${uuid()}.jpeg`;
+    let filename = `${type}-${uuid()}.jpeg`;
     const docId = req.params.id || req.user.id;
     if (docId) {
       const doc = await Model.findById(docId).select("+photo");

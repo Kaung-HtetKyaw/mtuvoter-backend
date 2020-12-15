@@ -43,12 +43,18 @@ exports.updateMe = catchAsyncError(async (req, res, next) => {
     user.verified = false;
     await user.save({ validateBeforeSave: false });
     await createVerifyTokenAndSendMail(user, req, res, next);
+    return;
   }
   res.status(200).json({
     status: "success",
     data: user,
   });
 });
+
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 exports.isVerified = catchAsyncError(async (req, res, next) => {
   if (!req.user.verified) {

@@ -57,6 +57,7 @@ exports.authorize = (...roles) => {
 };
 
 exports.signup = catchAsyncError(async (req, res, next) => {
+  console.log(req.body);
   const { email, password, confirmedPassword, student_type, name } = req.body;
   let user = await User.create({
     email,
@@ -98,6 +99,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
     "_v_t",
     days(1)
   );
+  const auth_token = createJWTCookie({ id: user._id }, req, res, "jwt");
   try {
     const url = `${getBaseUrl(req)}/users/me`;
     await new Email(user, url).sendWelcome();
@@ -105,6 +107,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
       status: "success",
       data: user,
       _v_t: votintTokenJWT,
+      token: auth_token,
     });
   } catch (error) {
     return next(new AppError("Error Sending Mail", 500));

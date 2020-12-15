@@ -20,7 +20,8 @@ router
     userController.convertFileToBuffer,
     userController.uploadFile,
     userController.updateMe
-  );
+  )
+  .get(userController.getMe, userController.getUser);
 router.route("/vote-status").get(userController.getVoteStatus);
 
 module.exports = router;
