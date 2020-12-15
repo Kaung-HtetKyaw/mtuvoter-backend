@@ -29,6 +29,6 @@ module.exports = class Storage {
       .resize(width, height)
       .toFormat("jpeg")
       .jpeg({ quality: 90 })
-      .toFile(`public/images/${type}/${name}`);
+      .toFile(`public/images/${name}`);
   }
 };

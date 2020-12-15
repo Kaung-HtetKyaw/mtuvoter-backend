@@ -31,6 +31,7 @@ exports.raced = catchAsyncError(async (req, res, next) => {
 
 exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
   const votingToken = getCookieFromRequest(req, "_v_t");
+  console.log(votingToken);
   if (!votingToken) {
     return next(
       new AppError(
@@ -39,24 +40,20 @@ exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
     );
   }
   const decodedToken = await verifyJwtToken(votingToken);
+  console.log(decodedToken);
   req.voting_token_id = decodedToken.id;
   next();
 });
 
 exports.hasVoted = catchAsyncError(async (req, res, next) => {
-  const {
-    election: _election,
-    position: _post,
-    candidate: _candidate,
-  } = req.body;
+  const { election: _election, position: _post } = req.body;
   const hasAlreadyVoted = await Ballot.exists({
     _v_t: req.voting_token_id,
     _election,
     _post,
-    _candidate,
   });
   if (hasAlreadyVoted) {
-    return next(new AppError("You have already voted for this candidate", 400));
+    return next(new AppError("You have already voted for this position", 400));
   }
   next();
 });
@@ -66,12 +63,14 @@ exports.vote = catchAsyncError(async (req, res, next) => {
     election: _election,
     position: _post,
     candidate: _candidate,
+    student_type,
   } = req.body;
   const ballot = await Ballot.create({
     _v_t: req.voting_token_id,
     _election,
     _post,
     _candidate,
+    student_type,
   });
   // destroy the vote token if guest user
   if (!req.user) {
