@@ -5,7 +5,8 @@ const candidateController = require("../controllers/candidate");
 const authController = require("../controllers/auth");
 const electionController = require("../controllers/election");
 
-router.route("/").get(candidateController.getCandidatesByElection);
+router.route("/").get(candidateController.getCandidates);
+router.route("/:id").get(candidateController.getCandidate);
 
 router.use(authController.protect, authController.authorize("admin"));
 router
@@ -14,8 +15,8 @@ router
     candidateController.convertFileToBuffer,
     candidateController.uploadFile,
     candidateController.createCandidate
-  )
-  .get(candidateController.getCandidatesByElection);
+  );
+
 router
   .route("/:id")
   .get(candidateController.getCandidate)

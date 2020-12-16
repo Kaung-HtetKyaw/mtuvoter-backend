@@ -57,7 +57,13 @@ exports.updateCandidate = catchAsyncError(async (req, res, next) => {
 exports.getCandidate = handler.getOne(Candidate, {
   path: "_election _post",
 });
-exports.getCandidatesByElection = handler.getAll(Candidate, (req) => {
-  return { _election: mongoose.Types.ObjectId(req.params.election) };
+// get candidates for a election or for a position
+exports.getCandidates = handler.getAll(Candidate, (req) => {
+  let filter = {};
+  if (req.params.election)
+    filter._election = mongoose.Types.ObjectId(req.params.election);
+  if (req.params.position)
+    filter._post = mongoose.Types.ObjectId(req.params.position);
+  return filter;
 });
 exports.deleteCandidate = handler.deleteOne(Candidate);

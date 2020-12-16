@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const positionRouter = require("./position");
+const candidateRouter = require("./candidate");
 
 const electionController = require("../controllers/election");
 
@@ -16,5 +17,6 @@ router
   .delete(electionController.deleteElection);
 
 router.use("/:election/positions", positionRouter);
+router.use("/:election/candidates", candidateRouter);
 
 module.exports = router;
