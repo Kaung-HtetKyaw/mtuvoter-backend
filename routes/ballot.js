@@ -16,5 +16,9 @@ router.get(
   "/count-by-election/:election",
   ballotController.getBallotCountByElection
 );
+router.get(
+  "/elections/:election/positions/:position",
+  ballotController.getBallotCountForCandidateByPosition
+);
 
 module.exports = router;

@@ -71,5 +71,6 @@ candidateSchema.path("_post").validate({
   },
   message: "Cannot find related election",
 });
+
 const Candidate = mongoose.model("Candidate", candidateSchema);
 module.exports = Candidate;

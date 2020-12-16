@@ -37,6 +37,47 @@ exports.getBallotCountForCandidateByStudent = catchAsyncError(
   }
 );
 
+// ballot count of candidates for a given position
+exports.getBallotCountForCandidateByPosition = catchAsyncError(
+  async (req, res, next) => {
+    const result = await Ballot.aggregate([
+      {
+        $match: {
+          _election: mongoose.Types.ObjectId(req.params.election),
+          _post: mongoose.Types.ObjectId(req.params.position),
+        },
+      },
+      {
+        $group: {
+          _id: "$_candidate",
+          vote_count: { $sum: 1 },
+        },
+      },
+      {
+        $addFields: { candidate: "$_id" },
+      },
+      {
+        $project: { _id: 0 },
+      },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "candidate",
+          foreignField: "_id",
+          as: "candidate",
+        },
+      },
+      {
+        $sort: { vote_count: -1 },
+      },
+    ]);
+    res.status(200).json({
+      status: "success",
+      data: result,
+    });
+  }
+);
+
 exports.getBallotCountForElectionByStudent = catchAsyncError(
   async (req, res, next) => {
     const result = await Ballot.aggregate([
