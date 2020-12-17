@@ -55,16 +55,24 @@ exports.authorize = (...roles) => {
 };
 
 exports.signup = catchAsyncError(async (req, res, next) => {
-  const { email, password, confirmedPassword, student_type, name } = req.body;
+  const {
+    email,
+    password,
+    confirmedPassword,
+    student_type,
+    name,
+    SID,
+  } = req.body;
   let user = await User.create({
     email,
     password,
     confirmedPassword,
     student_type,
     name,
+    SID,
   });
   // creating token here because creating in pre save hook will creat token everytime updating user happens like updat password, creating tokens
-  const vote_token = await Token.create({});
+  const vote_token = await Token.create({ SID });
   user._v_t = vote_token._id;
 
   // send verification mail

@@ -9,7 +9,17 @@ exports.getElection = handler.getOne(Election, {
   path: "positions candidates",
   select: "-__v ",
 });
-exports.getALlElections = handler.getAll(Election);
+exports.getALlElections = handler.getAll(Election, (req) => {
+  let { year } = req.query;
+  if (year) {
+    return {
+      startDate: {
+        $gte: new Date(`${year}-01-01`),
+        $lte: new Date(`${year}-12-01`),
+      },
+    };
+  }
+});
 exports.deleteElection = handler.deleteOne(Election);
 
 exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {

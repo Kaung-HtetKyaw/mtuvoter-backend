@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const voteController = require("../controllers/vote");
+const electionController = require("../controllers/election");
 
 router
   .route("/")
   .post(
+    electionController.hasElectionStarted,
     voteController.raced,
     voteController.checkVoteToken,
     voteController.hasVoted,

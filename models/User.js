@@ -57,6 +57,11 @@ const userSchema = new mongoose.Schema(
     photo: {
       type: String,
     },
+    SID: {
+      type: String,
+      required: [true, "Please provide student id"],
+      unique: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -72,6 +77,10 @@ const userSchema = new mongoose.Schema(
     _v_t: {
       type: mongoose.Schema.ObjectId,
       ref: "Token",
+    },
+    subscribed: {
+      type: Boolean,
+      default: false,
     },
   },
   options

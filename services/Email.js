@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
 const html_to_text = require("html-to-text");
-
+const sendgrid = require("@sendgrid/mail");
 module.exports = class Email {
   constructor(user, url) {
     this.firstName = user.name.split(" ");
@@ -29,11 +29,12 @@ module.exports = class Email {
       },
     });
   }
-  async send(template, subject) {
+  async send(template, subject, data) {
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       subject,
       url: this.url,
       firstName: this.firstName,
+      data,
     });
     const mailOptions = {
       from: this.from,
@@ -55,5 +56,26 @@ module.exports = class Email {
       "passwordReset",
       "Reset your password here (valid for 10 mins)"
     );
+  }
+  // send bulk mails
+  async sendNewsNoti(emails, data) {
+    const html = pug.renderFile(`${__dirname}/../views/email/news.pug`, {
+      subject: data.title,
+      url: this.url,
+      firstName: this.firstName,
+      data,
+    });
+    const mailOptions = {
+      from: this.from,
+      to: emails,
+      subject: data.title,
+      html,
+      text: html_to_text.fromString(html),
+    };
+
+    if (process.env.NODE_ENV === "production") {
+      console.log(process.env.SENDGRID_API);
+      await this.createNewTransport().sendMail(mailOptions);
+    }
   }
 };

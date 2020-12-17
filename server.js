@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 // put this before the app is initialized
 process.on("uncaughtException", (error) => {
+  console.log(EvalError);
   console.error(error.name, error.message);
   console.log("UNCAUGHT EXCEPTION! SHUTTING DOWN.....❎");
   process.exit(1);

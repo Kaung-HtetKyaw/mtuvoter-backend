@@ -31,7 +31,6 @@ exports.raced = catchAsyncError(async (req, res, next) => {
 
 exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
   const votingToken = getCookieFromRequest(req, "_v_t");
-  console.log(votingToken);
   if (!votingToken) {
     return next(
       new AppError(
@@ -40,7 +39,6 @@ exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
     );
   }
   const decodedToken = await verifyJwtToken(votingToken);
-  console.log(decodedToken);
   req.voting_token_id = decodedToken.id;
   next();
 });
@@ -72,10 +70,7 @@ exports.vote = catchAsyncError(async (req, res, next) => {
     _candidate,
     student_type,
   });
-  // destroy the vote token if guest user
-  if (!req.user) {
-    await Token.findByIdAndDelete(req.voting_token_id);
-  }
+
   res.status(200).json({
     status: "success",
     data: ballot,
