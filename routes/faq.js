@@ -6,7 +6,10 @@ const authController = require("../controllers/auth");
 
 router.use(authController.protect, authController.authorize("admin", "mod"));
 
-router.route("/").get(faqController.getAllFAQ).post(faqController.creatFAQ);
+router
+  .route("/")
+  .get(faqController.checkCache, faqController.getAllFAQ)
+  .post(faqController.creatFAQ);
 router
   .route("/:id")
   .get(faqController.getFAQ)

@@ -14,6 +14,9 @@ const multerUpload = storage.createMulterUpload();
 exports.convertFileToBuffer = multerUpload.single("photo");
 
 exports.uploadFile = handler.uploadFile(storage, "candidates", Candidate);
+exports.checkCache = handler.checkCache((req) => {
+  return req.params.id || req.params.candidate;
+});
 
 exports.createCandidate = catchAsyncError(async (req, res, next) => {
   const candidate = await Candidate.create({
@@ -31,32 +34,26 @@ exports.createCandidate = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.updateCandidate = catchAsyncError(async (req, res, next) => {
-  const { election, position, id } = req.params;
-  const candidate = await Candidate.findOneAndUpdate(
-    {
+exports.updateCandidate = handler.updateOne(
+  Candidate,
+  (req) => {
+    const { election, position, id } = req.params;
+    return {
       _election: mongoose.Types.ObjectId(election),
       _post: mongoose.Types.ObjectId(position),
       _id: mongoose.Types.ObjectId(id),
-      photo: req.file.filename,
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  if (!candidate) {
-    return next(new AppError("Cannot find the candidate", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: candidate,
-  });
-});
+    };
+  },
+  true
+);
 
-exports.getCandidate = handler.getOne(Candidate, {
-  path: "_election _post",
-});
+exports.getCandidate = handler.getOne(
+  Candidate,
+  {
+    path: "_election _post",
+  },
+  true
+);
 // get candidates for a election or for a position
 exports.getCandidates = handler.getAll(Candidate, (req) => {
   let filter = {};

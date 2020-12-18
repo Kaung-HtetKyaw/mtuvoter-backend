@@ -4,11 +4,20 @@ const Election = require("../models/Election");
 const handler = require("../factory/handler");
 
 exports.createElection = handler.createOne(Election);
-exports.updateElection = handler.updateOne(Election);
-exports.getElection = handler.getOne(Election, {
-  path: "positions candidates",
-  select: "-__v ",
+exports.updateElection = handler.updateOne(Election, true);
+exports.getElection = handler.getOne(
+  Election,
+  {
+    path: "positions candidates",
+    select: "-__v ",
+  },
+  true
+);
+
+exports.checkCache = handler.checkCache((req) => {
+  return req.params.id || req.params.election;
 });
+
 exports.getALlElections = handler.getAll(Election, (req) => {
   let { year } = req.query;
   if (year) {
@@ -25,12 +34,28 @@ exports.deleteElection = handler.deleteOne(Election);
 exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {
   // make sure election comes first
   const electionId = req.params.election || req.params.id;
-  console.log(electionId);
   const election = await Election.findById(electionId).select("+startDate");
   if (Date.now() > election.startDate) {
     return next(
       new AppError(
         "You cannot perform this action because election has already started",
+        400
+      )
+    );
+  }
+  next();
+});
+
+exports.raced = catchAsyncError(async (req, res, next) => {
+  const electionID = req.body.election || req.params.election;
+  if (!electionID) {
+    return next(new AppError("Invalid election", 404));
+  }
+  const election = await Election.findById(electionID).select("+startDate");
+  if (Date.now() > election.endDate) {
+    return next(
+      new AppError(
+        "You cannot perform this action because election has been called raced",
         400
       )
     );

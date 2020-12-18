@@ -5,6 +5,7 @@ const APIFeatures = require("../factory/API_Features");
 const Storage = require("../services/Storage/Storage");
 const { v4: uuid } = require("uuid");
 const { noop } = require("../utils/utils");
+const RedisCache = require("../services/Cache");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
@@ -16,13 +17,17 @@ exports.createOne = (Model) => {
   });
 };
 
-exports.getOne = (Model, populateOptions) => {
+exports.getOne = (Model, populateOptions, setCache) => {
   return catchAsyncError(async (req, res, next) => {
     let query = getQueryByParam(Model, req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
     if (!doc) {
       return next(new AppError("Cannot find election", 404));
+    }
+    // set new record
+    if (setCache) {
+      await RedisCache.setRecord(doc.id, JSON.stringify(doc));
     }
     res.status(200).json({
       status: "success",
@@ -31,7 +36,7 @@ exports.getOne = (Model, populateOptions) => {
   });
 };
 
-exports.updateOne = (Model, filterCb = noop) => {
+exports.updateOne = (Model, setCache, filterCb = noop) => {
   return catchAsyncError(async (req, res, next) => {
     const filter = filterCb(req) || req.params.id;
     let body = removeElectionTypeFromBody(req);
@@ -46,6 +51,10 @@ exports.updateOne = (Model, filterCb = noop) => {
     if (!doc) {
       return next(new AppError("Cannot find the election", 404));
     }
+    // update the record
+    if (setCache) {
+      await RedisCache.setRecord(doc.id, JSON.stringify(doc));
+    }
     res.status(200).json({
       status: "success",
       data: doc,
@@ -53,7 +62,7 @@ exports.updateOne = (Model, filterCb = noop) => {
   });
 };
 
-exports.getAll = (Model, filterCb) => {
+exports.getAll = (Model, filterCb, setCache, key) => {
   return catchAsyncError(async (req, res, next) => {
     let filter = filterCb ? filterCb(req) : {};
     const features = new APIFeatures(Model.find(filter), req.query)
@@ -62,6 +71,9 @@ exports.getAll = (Model, filterCb) => {
       .sort()
       .paginate();
     const docs = await features.query;
+    if (setCache) {
+      await RedisCache.setRecord(key, JSON.stringify(docs));
+    }
     res.status(200).json({
       status: "success",
       data: docs,
@@ -72,6 +84,7 @@ exports.getAll = (Model, filterCb) => {
 exports.deleteOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
     await Model.findByIdAndDelete(req.params.id);
+    await RedisCache.del(req.params.id);
     res.status(204).json({
       status: "success",
       data: null,
@@ -110,5 +123,20 @@ exports.uploadFile = (storage, type, Model) => {
       });
 
     return next();
+  });
+};
+
+exports.checkCache = (getKey) => {
+  return catchAsyncError(async (req, res, next) => {
+    const key = getKey(req);
+    console.log(key);
+    const record = await RedisCache.checkCache(key);
+    if (record) {
+      return res.status(200).json({
+        status: "success",
+        data: JSON.parse(record),
+      });
+    }
+    next();
   });
 };

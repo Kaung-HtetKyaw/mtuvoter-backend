@@ -6,7 +6,9 @@ const authController = require("../controllers/auth");
 const electionController = require("../controllers/election");
 
 router.route("/").get(candidateController.getCandidates);
-router.route("/:id").get(candidateController.getCandidate);
+router
+  .route("/:id")
+  .get(candidateController.checkCache, candidateController.getCandidate);
 
 router.use(authController.protect, authController.authorize("admin"));
 router
@@ -19,9 +21,7 @@ router
 
 router
   .route("/:id")
-  .get(candidateController.getCandidate)
   .patch(
-    electionController.hasElectionStarted,
     candidateController.convertFileToBuffer,
     candidateController.uploadFile,
     candidateController.updateCandidate

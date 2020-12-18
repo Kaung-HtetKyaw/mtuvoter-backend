@@ -11,24 +11,6 @@ const AppError = require("../utils/AppError");
 const Ballot = require("../models/Ballot");
 const Token = require("../models/Token");
 
-exports.raced = catchAsyncError(async (req, res, next) => {
-  if (!req.body.election) {
-    return next(new AppError("Invalid election", 404));
-  }
-  const election = await Election.findById(req.body.election).select(
-    "+startDate"
-  );
-  if (Date.now() > election.endDate) {
-    return next(
-      new AppError(
-        "You cannot perform this action because election has been called raced",
-        400
-      )
-    );
-  }
-  next();
-});
-
 exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
   const votingToken = getCookieFromRequest(req, "_v_t");
   if (!votingToken) {
