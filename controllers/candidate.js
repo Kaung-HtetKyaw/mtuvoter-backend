@@ -14,9 +14,6 @@ const multerUpload = storage.createMulterUpload();
 exports.convertFileToBuffer = multerUpload.single("photo");
 
 exports.uploadFile = handler.uploadFile(storage, "candidates", Candidate);
-exports.checkCache = handler.checkCache((req) => {
-  return req.params.id || req.params.candidate;
-});
 
 exports.createCandidate = catchAsyncError(async (req, res, next) => {
   const candidate = await Candidate.create({
@@ -64,3 +61,7 @@ exports.getCandidates = handler.getAll(Candidate, (req) => {
   return filter;
 });
 exports.deleteCandidate = handler.deleteOne(Candidate);
+
+exports.checkCacheCandidate = handler.checkCache((req) => {
+  return req.params.id || req.params.candidate;
+});

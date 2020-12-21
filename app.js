@@ -79,6 +79,9 @@ app.use("/api/v1/tokens", tokenRouter);
 app.use("/api/v1/ballots", ballotRouter);
 app.use("/api/v1/faqs", faqRouter);
 app.use("/api/v1/news", newsRouter);
+app.get("/", (req, res, next) => {
+  res.render("index");
+});
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {

@@ -3,16 +3,10 @@ extends base
 block append head
    title #{title}
 block content
-<<<<<<< HEAD
-  h1 error
-  //- h1= message
-  //- h2= error.status
-  //- pre #{error.stack}
-=======
+
    main.main
    .error
       .error__title
          h2.heading-secondary.heading-secondary--error Uh oh! Something went wrong!   
          h2.error__emoji 😢 🤯
       .error__msg= message
->>>>>>> dev

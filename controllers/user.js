@@ -6,8 +6,7 @@ const { excludeFromBodyExcept } = require("../utils/utils");
 const { createVerifyTokenAndSendMail } = require("../utils/email");
 const handler = require("../factory/handler");
 const Storage = require("../services/Storage/Storage");
-
-const { v4: uuid } = require("uuid");
+const RedisCache = require("../services/Cache");
 
 const storage = new Storage({ width: 500, height: 500 });
 const multerUpload = storage.createMulterUpload();
@@ -45,6 +44,8 @@ exports.updateMe = catchAsyncError(async (req, res, next) => {
     await createVerifyTokenAndSendMail(user, req, res, next);
     return;
   }
+  // update cache
+  await RedisCache.setRecord(req.user.id, JSON.stringify(user));
   res.status(200).json({
     status: "success",
     data: user,
@@ -86,4 +87,8 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
   res.status(statusCode).json({
     status,
   });
+});
+
+exports.checkCache = handler.checkCache((req) => {
+  return req.user.id;
 });

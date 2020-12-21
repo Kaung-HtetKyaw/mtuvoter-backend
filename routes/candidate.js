@@ -8,7 +8,10 @@ const electionController = require("../controllers/election");
 router.route("/").get(candidateController.getCandidates);
 router
   .route("/:id")
-  .get(candidateController.checkCache, candidateController.getCandidate);
+  .get(
+    candidateController.checkCacheCandidate,
+    candidateController.getCandidate
+  );
 
 router.use(authController.protect, authController.authorize("admin"));
 router

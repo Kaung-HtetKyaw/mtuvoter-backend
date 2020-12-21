@@ -78,6 +78,7 @@ exports.getBallotCountForCandidateByPosition = catchAsyncError(
   }
 );
 
+// get vote counts on which type of students vote how much
 exports.getBallotCountForElectionByStudent = catchAsyncError(
   async (req, res, next) => {
     const result = await Ballot.aggregate([
@@ -108,7 +109,7 @@ exports.getBallotCountForElectionByStudent = catchAsyncError(
 );
 
 exports.getBallotCountByElection = catchAsyncError(async (req, res, next) => {
-  const count = await Ballot.countDocuments({ _election: req.params.election });
+  const count = await Ballot.countDocuments({ _election: req.body.election });
   res.status(200).json({
     status: "success",
     data: count,

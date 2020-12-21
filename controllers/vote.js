@@ -1,15 +1,7 @@
-const mongoose = require("mongoose");
 const { catchAsyncError } = require("../utils/utils");
-const {
-  getCookieFromRequest,
-  verifyJwtToken,
-  getAuthTokenFromHeaderOrCookie,
-} = require("../utils/token");
-const { promisify } = require("util");
-const Election = require("../models/Election");
+const { getCookieFromRequest, verifyJwtToken } = require("../utils/token");
 const AppError = require("../utils/AppError");
 const Ballot = require("../models/Ballot");
-const Token = require("../models/Token");
 
 exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
   const votingToken = getCookieFromRequest(req, "_v_t");
@@ -52,7 +44,6 @@ exports.vote = catchAsyncError(async (req, res, next) => {
     _candidate,
     student_type,
   });
-
   res.status(200).json({
     status: "success",
     data: ballot,

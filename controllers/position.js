@@ -8,12 +8,6 @@ const Post = require("../models/Post");
 
 exports.createPosition = catchAsyncError(async (req, res, next) => {
   const { name, description } = req.body;
-  // const electionExists = await Election.exists({
-  //   _id: mongoose.Types.ObjectId(req.params.election),
-  // });
-  // if (!electionExists) {
-  //   return next(new AppError("Cannot find the related election", 404));
-  // }
   const position = await Position.create({
     name,
     description,
@@ -30,3 +24,7 @@ exports.getPositionsByElection = handler.getAll(Position, (req) => {
 });
 exports.updatePosition = handler.updateOne(Position);
 exports.deletePosition = handler.deleteOne(Post);
+
+exports.checkCachePositions = handler.checkCache((req) => {
+  return `election-${req.params.election}-positions`;
+});

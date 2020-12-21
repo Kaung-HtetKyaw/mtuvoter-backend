@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { STUDENT_TYPE } = require("../utils/constants");
+const Realtime = require("../services/Pusher");
 
 const ballotSchema = new mongoose.Schema({
   _v_t: {
@@ -46,6 +47,15 @@ ballotSchema.index(
     unique: true,
   }
 );
+
+ballotSchema.post("save", async function (doc) {
+  const { _election, _post, _candidate } = doc;
+  Realtime.trigger("vote-result", "new-vote", {
+    _election,
+    _post,
+    _candidate,
+  });
+});
 
 const Ballot = mongoose.model("Ballot", ballotSchema);
 module.exports = Ballot;

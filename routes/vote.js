@@ -7,8 +7,8 @@ const electionController = require("../controllers/election");
 router
   .route("/")
   .post(
-    electionController.hasElectionStarted,
     electionController.raced,
+    electionController.started,
     voteController.checkVoteToken,
     voteController.hasVoted,
     voteController.vote

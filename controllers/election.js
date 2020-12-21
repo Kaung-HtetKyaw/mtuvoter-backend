@@ -31,9 +31,9 @@ exports.getALlElections = handler.getAll(Election, (req) => {
 });
 exports.deleteElection = handler.deleteOne(Election);
 
-exports.hasElectionStarted = catchAsyncError(async (req, res, next) => {
+exports.started = catchAsyncError(async (req, res, next) => {
   // make sure election comes first
-  const electionId = req.params.election || req.params.id;
+  const electionId = req.body.election || req.params.id;
   const election = await Election.findById(electionId).select("+startDate");
   if (Date.now() > election.startDate) {
     return next(
@@ -55,7 +55,7 @@ exports.raced = catchAsyncError(async (req, res, next) => {
   if (Date.now() > election.endDate) {
     return next(
       new AppError(
-        "You cannot perform this action because election has been called raced",
+        "You cannot perform this action because election has already been called raced",
         400
       )
     );

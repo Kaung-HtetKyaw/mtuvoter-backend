@@ -17,7 +17,7 @@ exports.createOne = (Model) => {
   });
 };
 
-exports.getOne = (Model, populateOptions, setCache) => {
+exports.getOne = (Model, setCache, populateOptions = "", filterCb = noop) => {
   return catchAsyncError(async (req, res, next) => {
     let query = getQueryByParam(Model, req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
@@ -129,7 +129,7 @@ exports.uploadFile = (storage, type, Model) => {
 exports.checkCache = (getKey) => {
   return catchAsyncError(async (req, res, next) => {
     const key = getKey(req);
-    console.log(key);
+
     const record = await RedisCache.checkCache(key);
     if (record) {
       return res.status(200).json({
