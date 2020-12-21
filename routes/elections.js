@@ -13,7 +13,7 @@ router
 router
   .route("/:id")
   .patch(electionController.updateElection)
-  .get(lectionController.getElection)
+  .get(electionController.getElection)
   .delete(electionController.deleteElection);
 
 router.use("/:election/positions", positionRouter);
