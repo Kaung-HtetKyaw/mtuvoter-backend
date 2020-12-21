@@ -6,12 +6,7 @@ const authController = require("../controllers/auth");
 const electionController = require("../controllers/election");
 
 router.route("/").get(candidateController.getCandidates);
-router
-  .route("/:id")
-  .get(
-    candidateController.checkCacheCandidate,
-    candidateController.getCandidate
-  );
+router.route("/:id").get(candidateController.getCandidate);
 
 router.use(authController.protect, authController.authorize("admin"));
 router

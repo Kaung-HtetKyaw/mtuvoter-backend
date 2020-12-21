@@ -7,10 +7,7 @@ const authController = require("../controllers/auth");
 router
   .route("/")
   .post(positionController.createPosition)
-  .get(
-    positionController.checkCachePositions,
-    positionController.getPositionsByElection
-  );
+  .get(positionController.getPositionsByElection);
 router
   .route("/:id")
   .delete(

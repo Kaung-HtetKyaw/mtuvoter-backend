@@ -8,7 +8,7 @@ router.use(authController.protect, authController.authorize("admin", "mod"));
 
 router
   .route("/")
-  .get(faqController.checkCache, faqController.getAllFAQ)
+  .get( faqController.getAllFAQ)
   .post(faqController.creatFAQ);
 router
   .route("/:id")
