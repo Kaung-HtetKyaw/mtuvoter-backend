@@ -62,6 +62,6 @@ exports.getCandidates = handler.getAll(Candidate, (req) => {
 });
 exports.deleteCandidate = handler.deleteOne(Candidate);
 
-exports.checkCacheCandidate = handler.checkCache((req) => {
-  return req.params.id || req.params.candidate;
-});
+// exports.checkCacheCandidate = handler.checkCache((req) => {
+//   return req.params.id || req.params.candidate;
+// });

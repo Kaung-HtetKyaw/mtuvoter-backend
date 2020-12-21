@@ -5,7 +5,7 @@ const APIFeatures = require("../factory/API_Features");
 const Storage = require("../services/Storage/Storage");
 const { v4: uuid } = require("uuid");
 const { noop } = require("../utils/utils");
-const RedisCache = require("../services/Cache");
+// const RedisCache = require("../services/Cache");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
@@ -25,10 +25,10 @@ exports.getOne = (Model, setCache, populateOptions = "", filterCb = noop) => {
     if (!doc) {
       return next(new AppError("Cannot find election", 404));
     }
-    // set new record
-    if (setCache) {
-      await RedisCache.setRecord(doc.id, JSON.stringify(doc));
-    }
+    // // set new record
+    // if (setCache) {
+    //   await RedisCache.setRecord(doc.id, JSON.stringify(doc));
+    // }
     res.status(200).json({
       status: "success",
       data: doc,
@@ -51,10 +51,10 @@ exports.updateOne = (Model, setCache, filterCb = noop) => {
     if (!doc) {
       return next(new AppError("Cannot find the election", 404));
     }
-    // update the record
-    if (setCache) {
-      await RedisCache.setRecord(doc.id, JSON.stringify(doc));
-    }
+    // // update the record
+    // if (setCache) {
+    //   await RedisCache.setRecord(doc.id, JSON.stringify(doc));
+    // }
     res.status(200).json({
       status: "success",
       data: doc,
@@ -71,9 +71,9 @@ exports.getAll = (Model, filterCb, setCache, key) => {
       .sort()
       .paginate();
     const docs = await features.query;
-    if (setCache) {
-      await RedisCache.setRecord(key, JSON.stringify(docs));
-    }
+    // if (setCache) {
+    //   await RedisCache.setRecord(key, JSON.stringify(docs));
+    // }
     res.status(200).json({
       status: "success",
       data: docs,
@@ -84,7 +84,7 @@ exports.getAll = (Model, filterCb, setCache, key) => {
 exports.deleteOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
     await Model.findByIdAndDelete(req.params.id);
-    await RedisCache.del(req.params.id);
+    // await RedisCache.del(req.params.id);
     res.status(204).json({
       status: "success",
       data: null,
@@ -130,7 +130,7 @@ exports.checkCache = (getKey) => {
   return catchAsyncError(async (req, res, next) => {
     const key = getKey(req);
 
-    const record = await RedisCache.checkCache(key);
+    // const record = await RedisCache.checkCache(key);
     if (record) {
       return res.status(200).json({
         status: "success",

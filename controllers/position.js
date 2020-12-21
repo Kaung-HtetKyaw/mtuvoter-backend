@@ -25,6 +25,6 @@ exports.getPositionsByElection = handler.getAll(Position, (req) => {
 exports.updatePosition = handler.updateOne(Position);
 exports.deletePosition = handler.deleteOne(Post);
 
-exports.checkCachePositions = handler.checkCache((req) => {
-  return `election-${req.params.election}-positions`;
-});
+// exports.checkCachePositions = handler.checkCache((req) => {
+//   return `election-${req.params.election}-positions`;
+// });

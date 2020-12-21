@@ -14,9 +14,9 @@ exports.getElection = handler.getOne(
   true
 );
 
-exports.checkCache = handler.checkCache((req) => {
-  return req.params.id || req.params.election;
-});
+// exports.checkCache = handler.checkCache((req) => {
+//   return req.params.id || req.params.election;
+// });
 
 exports.getALlElections = handler.getAll(Election, (req) => {
   let { year } = req.query;

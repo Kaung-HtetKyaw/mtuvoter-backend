@@ -7,9 +7,9 @@ const Email = require("../services/Email");
 const User = require("../models/User");
 const { getBaseUrl } = require("../utils/utils");
 
-exports.checkCache = handler.checkCache((req) => {
-  return req.params.id;
-});
+// exports.checkCache = handler.checkCache((req) => {
+//   return req.params.id;
+// });
 
 exports.createNews = catchAsyncError(async (req, res, next) => {
   const news = await News.create({ ...req.body });
