@@ -24,7 +24,7 @@ const electionSchema = new mongoose.Schema(
       required: [true, "Election must have a end date"],
       validate: {
         validator: function (value) {
-          return value - this.startDate == days(1);
+          return value > this.startDate;
         },
       },
     },
@@ -86,15 +86,8 @@ electionSchema.virtual("candidates", {
   localField: "_id",
 });
 
-electionSchema.virtual("numPosition").get(function () {
-  return this.positions ? this.positions.length : 0;
-});
-electionSchema.virtual("numCandidates").get(function () {
-  return this.candidates ? this.candidates.length : 0;
-});
-
 electionSchema.pre("save", function (next) {
-  const curYear = this.createdAt.getFullYear();
+  const curYear = this.startDate.getFullYear();
   this.name = `${capitalize(this.type)} Union Election ${curYear}`;
   next();
 });

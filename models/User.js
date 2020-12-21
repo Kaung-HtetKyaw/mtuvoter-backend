@@ -3,8 +3,6 @@ const { isEmail } = require("validator");
 const bcrypt = require("bcryptjs");
 const { seconds, minutes } = require("../utils/time");
 const { generateHashedAndUnhashedCryptoToken } = require("../utils/token");
-const { STUDENT_TYPE } = require("../utils/constants");
-const Token = require("./Token");
 
 const options = {
   toJSON: { virtuals: true },

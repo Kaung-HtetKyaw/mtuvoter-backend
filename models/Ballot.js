@@ -51,9 +51,9 @@ ballotSchema.index(
 ballotSchema.post("save", async function (doc) {
   const { _election, _post, _candidate } = doc;
   Realtime.trigger("vote-result", "new-vote", {
-    _election,
-    _post,
-    _candidate,
+    election: _election,
+    position: _post,
+    candidate: _candidate,
   });
 });
 

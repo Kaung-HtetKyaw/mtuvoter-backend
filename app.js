@@ -13,7 +13,8 @@ const compression = require("compression");
 const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
-const passport = require("passport");
+const hpp = require("hpp");
+
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./controllers/error");
 // routers
@@ -45,7 +46,7 @@ app.set("views", path.join(__dirname, "views"));
 if (process.env.NODE_ENV == "development") {
   app.use(logger("dev"));
 }
-app.use(passport.initialize());
+
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -56,6 +57,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(mongoSanitize());
 // against XSS
 app.use(xss());
+// prevent parameter pollution
+app.use(hpp());
 
 // rate limiting
 const limiter = rateLimit({
