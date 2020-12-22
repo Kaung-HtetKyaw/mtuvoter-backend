@@ -76,7 +76,11 @@ app.use("/api", limiter);
 //   // Resort to standard compression
 //   return compression.filter(req, res);
 // };
-app.use(compression());
+app.use(
+  compression({
+    threshold: 0,
+  })
+);
 
 app.get("/", function (req, res, next) {
   res.render("index");
