@@ -31,6 +31,7 @@ const newsRouter = require("./routes/news");
 const { minutes } = require("./utils/time");
 
 var app = express();
+app.enable("trust proxy"); // heroku specific
 // enable cors
 app.use(cors());
 // handle options req for preflight case
@@ -39,35 +40,48 @@ app.options("*", cors());
 // GLOBAL MIDDLEWARES
 //set http headers (need to be before any req res cycle)
 app.use(helmet());
-// view engine setup
-app.set("view engine", "jade");
-app.set("views", path.join(__dirname, "views"));
-
 if (process.env.NODE_ENV == "development") {
   app.use(logger("dev"));
 }
+// view engine setup
+app.set("view engine", "jade");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 
 // data sanitization (should be after body parser to clean after the body is parsed)
 // against NOSQL query injections
 app.use(mongoSanitize());
 // against XSS
 app.use(xss());
-// prevent parameter pollution
-app.use(hpp());
-
 // rate limiting
 const limiter = rateLimit({
   max: 800,
   windowMs: minutes(15),
   message: "Too Many requests from this IP. Please try again in an hour",
 });
+// prevent parameter pollution
+app.use(hpp());
+
 app.use("/api", limiter);
-app.use(compression());
+
+const shouldCompress = (req, res) => {
+  if (req.headers["x-no-compression"]) {
+    // Will not compress responses, if this header is present
+    return false;
+  }
+  // Resort to standard compression
+  return compression.filter(req, res);
+};
+app.use(
+  compression({
+    filter: shouldCompress,
+    threshold: 0,
+  })
+);
 
 app.get("/", function (req, res, next) {
   res.render("index");
@@ -82,9 +96,6 @@ app.use("/api/v1/tokens", tokenRouter);
 app.use("/api/v1/ballots", ballotRouter);
 app.use("/api/v1/faqs", faqRouter);
 app.use("/api/v1/news", newsRouter);
-app.get("/", (req, res, next) => {
-  res.render("index");
-});
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
