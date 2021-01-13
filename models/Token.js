@@ -5,10 +5,15 @@ const { days } = require("../utils/time");
 const tokenSchema = new mongoose.Schema({
   token: {
     type: String,
+    required: [true, "Please provide a token"],
   },
   SID: {
     type: String,
     required: [true, "Please provide student id"],
+  },
+  _election: {
+    type: mongoose.Schema.ObjectId,
+    required: [true, "Token must belong to an election"],
   },
   createdAt: {
     type: Date,

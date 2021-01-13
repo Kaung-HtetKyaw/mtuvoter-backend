@@ -168,18 +168,23 @@ exports.logout = catchAsyncError(async (req, res, next) => {
 
 // guest login provide onetime token usage for a election
 exports.guestLogin = catchAsyncError(async (req, res, next) => {
-  const auth_token = getAuthTokenFromHeaderOrCookie(req, "jwt");
+  const auth_token = getAuthTokenFromHeaderOrCookie(req, "_v_t");
   if (auth_token) {
     return next(
       new AppError("Guest login is not available for authenticated user", 400)
     );
   }
 
-  if (!req.body.vote_token) {
-    return next(new AppError("Please provide voting token", 400));
+  if (!req.body.vote_token || !req.body._election) {
+    return next(
+      new AppError("Please provide both voting token and election", 400)
+    );
   }
   const hashed = convertUnhashedToHashedCryptoToken(req.body.vote_token);
-  const token = await Token.findOne({ token: hashed });
+  const token = await Token.findOne({
+    token: hashed,
+    _election: req.body._election,
+  });
   if (!token) {
     return next(new AppError("Invalid voting token", 400));
   }
@@ -188,7 +193,7 @@ exports.guestLogin = catchAsyncError(async (req, res, next) => {
     req,
     res,
     "_v_t",
-    days(1)
+    days(30)
   );
   res.status(200).json({
     status: "success",
