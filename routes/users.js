@@ -17,11 +17,7 @@ router.route("/guest").get(authController.guestLogin);
 router.use(authController.protect);
 router
   .route("/me")
-  .patch(
-    userController.convertFileToBuffer,
-    userController.uploadFile,
-    userController.updateMe
-  )
+  .patch(userController.convertFileToBuffer)
   .get(userController.getMe, userController.getUser);
 router.route("/vote-status").get(userController.getVoteStatus);
 

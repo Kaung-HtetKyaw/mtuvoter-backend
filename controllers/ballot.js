@@ -33,7 +33,7 @@ exports.getBallotCountForCandidateByStudent = catchAsyncError(
     res.status(200).json({
       status: "success",
       data: result,
-    });
+    }); 
   }
 );
 

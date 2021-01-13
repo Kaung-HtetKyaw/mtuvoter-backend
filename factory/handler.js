@@ -17,7 +17,7 @@ exports.createOne = (Model) => {
   });
 };
 
-exports.getOne = (Model, setCache, populateOptions = "", filterCb = noop) => {
+exports.getOne = (Model, populateOptions = "", setCache, filterCb = noop) => {
   return catchAsyncError(async (req, res, next) => {
     let query = getQueryByParam(Model, req.params.id);
     if (populateOptions) query = query.populate(populateOptions);

@@ -44,13 +44,9 @@ exports.updateCandidate = handler.updateOne(
   true
 );
 
-exports.getCandidate = handler.getOne(
-  Candidate,
-  {
-    path: "_election _post",
-  },
-  true
-);
+exports.getCandidate = handler.getOne(Candidate, {
+  path: "_election _post",
+});
 // get candidates for a election or for a position
 exports.getCandidates = handler.getAll(Candidate, (req) => {
   let filter = {};

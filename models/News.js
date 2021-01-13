@@ -9,6 +9,9 @@ const newsSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide the details"],
   },
+  photo: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
