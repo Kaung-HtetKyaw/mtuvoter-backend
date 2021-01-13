@@ -1,3 +1,5 @@
+const Log = require("../models/Log");
+
 exports.catchAsyncError = (cb) => {
   return (req, res, next) => {
     cb(req, res, next).catch((error) => next(error));
@@ -36,4 +38,14 @@ exports.excludeFromBodyExcept = (body, ...fields) => {
     if (!fields.includes(key)) delete body[key];
   }
   return body;
+};
+exports.getResourceNameFromOriginalUrl = (url) => {
+  return url.split("/api/v1/")[1].split("/")[0];
+};
+exports.createLog = async (type, req, id) => {
+  const log = await Log.create({
+    type,
+    by: req.user.email,
+    resource: `${this.getResourceNameFromOriginalUrl(req.originalUrl)} ${id}`,
+  });
 };

@@ -2,7 +2,10 @@ const AppError = require("../utils/AppError");
 const User = require("../models/User");
 const Token = require("../models/Token");
 const jwt = require("jsonwebtoken");
-const { verifyJwtToken } = require("../utils/token");
+const {
+  verifyJwtToken,
+  removeTokenFromResponseInDev,
+} = require("../utils/token");
 const { createVerifyTokenAndSendMail } = require("../utils/email");
 
 const { getBaseUrl } = require("../utils/utils");
@@ -108,12 +111,17 @@ exports.verify = catchAsyncError(async (req, res, next) => {
   try {
     const url = `${getBaseUrl(req)}/users/me`;
     await new Email(user, url).sendWelcome();
-    res.status(200).json({
-      status: "success",
-      data: user,
-      _v_t: votintTokenJWT,
-      token: auth_token,
-    });
+    res.status(200).json(
+      removeTokenFromResponseInDev(
+        {
+          status: "success",
+          data: user,
+          _v_t: votintTokenJWT,
+          token: auth_token,
+        },
+        ["_v_t", "token"]
+      )
+    );
   } catch (error) {
     return next(new AppError("Error Sending Mail", 500));
   }
@@ -148,12 +156,20 @@ exports.login = catchAsyncError(async (req, res, next) => {
     "_v_t",
     days(1)
   );
-  res.status(200).json({
-    status: "success",
-    token: auth_token,
-    _v_t: vote_token,
-    data: user,
-  });
+  // remove token from response
+  user._v_t = undefined;
+
+  res.status(200).json(
+    removeTokenFromResponseInDev(
+      {
+        status: "success",
+        token: auth_token,
+        _v_t: vote_token,
+        data: user,
+      },
+      ["_v_t", "token"]
+    )
+  );
 });
 
 exports.logout = catchAsyncError(async (req, res, next) => {
@@ -195,10 +211,15 @@ exports.guestLogin = catchAsyncError(async (req, res, next) => {
     "_v_t",
     days(30)
   );
-  res.status(200).json({
-    status: "success",
-    _v_t: votingTokenJWT,
-  });
+  res.status(200).json(
+    removeTokenFromResponseInDev(
+      {
+        status: "success",
+        _v_t: votingTokenJWT,
+      },
+      ["token", "_v_t"]
+    )
+  );
 });
 
 exports.forgotPassword = catchAsyncError(async (req, res, next) => {
@@ -251,11 +272,16 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
   // excluding password from response
   user.password = undefined;
   const token = createJWTCookie({ user: _id }, req, res, "jwt");
-  res.status(200).json({
-    status: "success",
-    token,
-    data: user,
-  });
+  res.status(200).json(
+    removeTokenFromResponseInDev(
+      {
+        status: "success",
+        token,
+        data: user,
+      },
+      ["token", "_v_t"]
+    )
+  );
 });
 exports.updatePassword = catchAsyncError(async (req, res, next) => {
   const { email, oldPassword, newPassword, confirmedPassword } = req.body;
@@ -280,8 +306,13 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   await user.save();
 
   const token = createJWTCookie({ id: user._id }, req, res, "jwt");
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  res.status(200).json(
+    removeTokenFromResponseInDev(
+      {
+        status: "success",
+        token,
+      },
+      ["token", "_v_t"]
+    )
+  );
 });

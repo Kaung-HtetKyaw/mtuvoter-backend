@@ -88,6 +88,17 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.addMod = catchAsyncError(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(req.body.id, { role: "mod" });
+  if (!user) {
+    return next(new AppError("Cannot find the user", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: user,
+  });
+});
+
 // exports.checkCache = handler.checkCache((req) => {
 //   return req.user.id;
 // });

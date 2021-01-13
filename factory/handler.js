@@ -3,13 +3,21 @@ const { getQueryByParam } = require("../utils/query");
 const AppError = require("../utils/AppError");
 const APIFeatures = require("../factory/API_Features");
 const Storage = require("../services/Storage/Storage");
+const Log = require("../models/Log");
 const { v4: uuid } = require("uuid");
-const { noop } = require("../utils/utils");
+const {
+  noop,
+  getResourceNameFromOriginalUrl,
+  createLog,
+} = require("../utils/utils");
 // const RedisCache = require("../services/Cache");
 
 exports.createOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
-    const doc = await Model.create({ ...req.body });
+    let body = { ...req.body };
+    if (req.file) body.photo = req.file.filename;
+    const doc = await Model.create({ ...body });
+    await createLog("create", req, doc._id);
     res.status(201).json({
       status: "success",
       data: doc,
@@ -20,6 +28,7 @@ exports.createOne = (Model) => {
 exports.getOne = (Model, populateOptions = "", setCache, filterCb = noop) => {
   return catchAsyncError(async (req, res, next) => {
     let query = getQueryByParam(Model, req.params.id);
+    console.log(req.user);
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
     if (!doc) {
@@ -48,6 +57,8 @@ exports.updateOne = (Model, setCache, filterCb = noop) => {
         runValidators: true,
       }
     );
+
+    await createLog("update", req, doc._id);
     if (!doc) {
       return next(new AppError("Cannot find the election", 404));
     }
@@ -84,6 +95,7 @@ exports.getAll = (Model, filterCb, setCache, key) => {
 exports.deleteOne = (Model) => {
   return catchAsyncError(async (req, res, next) => {
     await Model.findByIdAndDelete(req.params.id);
+    await createLog("delete", req, req.params.id);
     // await RedisCache.del(req.params.id);
     res.status(204).json({
       status: "success",

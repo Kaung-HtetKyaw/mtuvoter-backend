@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const { catchAsyncError } = require("../utils/error");
-const Election = require("../models/Election");
+const { createLog } = require("../utils/utils");
 const Position = require("../models/Post");
 const handler = require("../factory/handler");
 const Post = require("../models/Post");
@@ -13,6 +13,7 @@ exports.createPosition = catchAsyncError(async (req, res, next) => {
     description,
     _election: req.params.election,
   });
+  await createLog("create", req, position._id);
   res.status(201).json({
     status: "success",
     data: position,

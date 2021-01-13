@@ -17,8 +17,11 @@ router.route("/guest").get(authController.guestLogin);
 router.use(authController.protect);
 router
   .route("/me")
-  .patch(userController.convertFileToBuffer)
+  .patch(userController.updateMe)
   .get(userController.getMe, userController.getUser);
 router.route("/vote-status").get(userController.getVoteStatus);
+
+router.use(authController.authorize("admin"));
+router.patch("/roles", userController.addMod);
 
 module.exports = router;

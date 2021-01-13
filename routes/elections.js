@@ -4,17 +4,32 @@ const positionRouter = require("./position");
 const candidateRouter = require("./candidate");
 
 const electionController = require("../controllers/election");
+const authController = require("../controllers/auth");
 
 router
   .route("/")
   .get(electionController.getALlElections)
-  .post(electionController.createElection);
+  .post(
+    electionController.convertFileToBuffer,
+    electionController.uploadFile,
+    authController.protect,
+    authController.authorize("admin"),
+    electionController.createElection
+  );
 // for GET request, id could be either election id or slug
 router
   .route("/:id")
-  .patch(electionController.updateElection)
+  .patch(
+    authController.protect,
+    authController.authorize("admin"),
+    electionController.updateElection
+  )
   .get(electionController.getElection)
-  .delete(electionController.deleteElection);
+  .delete(
+    authController.protect,
+    authController.authorize("admin"),
+    electionController.deleteElection
+  );
 
 router.use("/:election/positions", positionRouter);
 router.use("/:election/candidates", candidateRouter);

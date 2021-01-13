@@ -21,5 +21,15 @@ const tokenSchema = new mongoose.Schema({
   },
 });
 
+tokenSchema.index(
+  {
+    SID: 1,
+    _election: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
 const Token = mongoose.model("Token", tokenSchema);
 module.exports = Token;

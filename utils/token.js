@@ -60,3 +60,16 @@ exports.convertUnhashedToHashedCryptoToken = (unhashed) => {
 exports.verifyJwtToken = async (token) => {
   return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 };
+
+exports.removeTokenFromResponseInDev = (res, tokens) => {
+  let result = {};
+  if (process.env.NODE_ENV === "production") {
+    for (const key in res) {
+      if (!tokens.includes(key)) {
+        result[key] = res[key];
+      }
+    }
+    return result;
+  }
+  return res;
+};

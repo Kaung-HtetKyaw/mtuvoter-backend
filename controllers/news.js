@@ -5,7 +5,7 @@ const handler = require("../factory/handler");
 const News = require("../models/News");
 const Email = require("../services/Email");
 const User = require("../models/User");
-const { getBaseUrl } = require("../utils/utils");
+const { getBaseUrl, createLog } = require("../utils/utils");
 
 const Storage = require("../services/Storage/Storage");
 
@@ -17,6 +17,8 @@ exports.uploadFile = handler.uploadFile(storage, "news", News);
 
 exports.createNews = catchAsyncError(async (req, res, next) => {
   const news = await News.create({ ...req.body, photo: req.file.filename });
+  await createLog("create", req, news._id);
+
   const users = await User.find({ subscribed: true }).select("+email");
   const emails = users.map((el) => el.email);
   const url = `${getBaseUrl}/news/${news.id}`;

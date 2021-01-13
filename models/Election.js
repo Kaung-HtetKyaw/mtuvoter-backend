@@ -14,6 +14,10 @@ const electionSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    photo: {
+      type: String,
+      required: [true, "Please provide a cover photo for the election"],
+    },
     // new Date('2020-12-12:06:00:00')
     startDate: {
       type: Date,
