@@ -19,7 +19,7 @@ exports.createJWTCookie = (
   const token = this.generateToken(payload);
   let cookieOptions = {
     expires: new Date(Date.now() + expiresIn),
-    httpOnly: true,
+    // httpOnly: true,
     //  secure: req.secure || req.headers["x-forwarded-proto"] === "https", //* heroku specific
   };
   res.cookie(cookieName, token, cookieOptions);
