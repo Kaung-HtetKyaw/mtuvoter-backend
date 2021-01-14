@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { promisify } = require("util");
 const { days } = require("./time");
+const { NONAME } = require("dns");
 
 exports.generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -19,6 +20,7 @@ exports.createJWTCookie = (
   const token = this.generateToken(payload);
   let cookieOptions = {
     expires: new Date(Date.now() + expiresIn),
+    sameSite: none,
     // httpOnly: true,
     //  secure: req.secure || req.headers["x-forwarded-proto"] === "https", //* heroku specific
   };
