@@ -39,7 +39,6 @@ const userSchema = new mongoose.Schema(
         values: ["user", "mod", "admin"],
         message: "Invalid user role",
       },
-      select: false,
     },
     confirmedPassword: {
       type: String,
