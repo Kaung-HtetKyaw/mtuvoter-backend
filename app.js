@@ -2,8 +2,6 @@ var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
@@ -33,7 +31,13 @@ const { minutes } = require("./utils/time");
 var app = express();
 app.enable("trust proxy"); // heroku specific
 // enable cors
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: ["http://localhost:8080"],
+  })
+);
 // handle options req for preflight case
 app.options("*", cors());
 
