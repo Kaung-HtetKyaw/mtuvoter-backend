@@ -25,7 +25,7 @@ const candidateSchema = new mongoose.Schema(
       unique: true,
     },
     year: {
-      type: Array,
+      type: String,
       required: [
         true,
         "Please provide the year the candidate is currently attending",
