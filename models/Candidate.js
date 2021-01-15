@@ -36,6 +36,13 @@ const candidateSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide candidate photo"],
     },
+    promise: {
+      type: String,
+      required: [
+        true,
+        "Please provide candidate's election or campaign promise",
+      ],
+    },
     type: {
       type: String,
       default: "student",

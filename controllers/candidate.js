@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const { catchAsyncError } = require("../utils/error");
-const {createLog} = require('../utils/utils')
+const { createLog } = require("../utils/utils");
 const Candidate = require("../models/Candidate");
 const Ballot = require("../models/Ballot");
 const handler = require("../factory/handler");
@@ -16,7 +16,8 @@ exports.convertFileToBuffer = multerUpload.single("photo");
 
 exports.uploadFile = handler.uploadFile(storage, "candidates", Candidate);
 
-exports.createCandidate = catchAsyncError(async (req, res, next) => { if (!req.file) {
+exports.createCandidate = catchAsyncError(async (req, res, next) => {
+  if (!req.file) {
     return next(new AppError("Please upload candidate photo", 400));
   }
   const candidate = await Candidate.create({
@@ -25,7 +26,7 @@ exports.createCandidate = catchAsyncError(async (req, res, next) => { if (!req.f
     _post: req.params.position,
     photo: req.file.filename,
   });
- await createLog('create',req,candidate._id)
+  await createLog("create", req, candidate._id);
   res.status(201).json({
     status: "success",
     data: candidate,
@@ -45,9 +46,7 @@ exports.updateCandidate = handler.updateOne(
   true
 );
 
-exports.getCandidate = handler.getOne(Candidate, {
-  path: "_election _post",
-});
+exports.getCandidate = handler.getOne(Candidate);
 // get candidates for a election or for a position
 exports.getCandidates = handler.getAll(Candidate, (req) => {
   let filter = {};

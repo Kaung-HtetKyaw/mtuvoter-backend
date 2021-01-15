@@ -31,7 +31,7 @@ exports.createNews = catchAsyncError(async (req, res, next) => {
     data: news,
   });
 });
-exports.updateNews = handler.updateOne(News, true);
+exports.updateNews = handler.updateOne(News);
 exports.getAllNews = handler.getAll(News);
 exports.getNews = handler.getOne(News, "");
 exports.deleteNews = handler.deleteOne(News);

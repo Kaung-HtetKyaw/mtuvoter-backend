@@ -45,7 +45,7 @@ exports.getOne = (Model, populateOptions = "", setCache, filterCb = noop) => {
   });
 };
 
-exports.updateOne = (Model, setCache, filterCb = noop) => {
+exports.updateOne = (Model, filterCb = noop, setCache) => {
   return catchAsyncError(async (req, res, next) => {
     const filter = filterCb(req) || req.params.id;
     let body = removeElectionTypeFromBody(req);

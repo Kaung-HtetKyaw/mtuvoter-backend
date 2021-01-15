@@ -5,6 +5,10 @@ const newsSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a title"],
   },
+  description: {
+    type: String,
+    required: [true, "Please provide description for news"],
+  },
   content: {
     type: String,
     required: [true, "Please provide the details"],
