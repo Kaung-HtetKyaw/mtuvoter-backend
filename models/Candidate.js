@@ -47,6 +47,10 @@ const candidateSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide candidate photo"],
     },
+    major: {
+      type: String,
+      required: [true, "Please provide the major candiate is attending"],
+    },
     promise: {
       type: String,
       required: [
