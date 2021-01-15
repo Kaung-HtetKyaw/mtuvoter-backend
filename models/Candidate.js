@@ -24,14 +24,25 @@ const candidateSchema = new mongoose.Schema(
       },
       unique: true,
     },
-    social: [
-      {
-        type: {
-          type: String,
-        },
-        url: String,
+    year: {
+      type: Array,
+      required: [
+        true,
+        "Please provide the year the candidate is currently attending",
+      ],
+      enum: {
+        values: [
+          "first",
+          "second",
+          "third",
+          "fourth",
+          "fifth",
+          "sixth",
+          "others",
+        ],
+        message: "Invalid school year",
       },
-    ],
+    },
     photo: {
       type: String,
       required: [true, "Please provide candidate photo"],
