@@ -31,12 +31,22 @@ const { minutes } = require("./utils/time");
 var app = express();
 app.enable("trust proxy"); // heroku specific
 // enable cors
+function setOriginHeader(req, res, next) {
+  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080"];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+  next();
+}
 
 app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  })
+  }),
+  setOriginHeader
 );
 // handle options req for preflight case
 app.options(
@@ -45,7 +55,8 @@ app.options(
     credentials: true,
     origin: "http://localhost:8080",
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  })
+  }),
+  setOriginHeader
 );
 
 // GLOBAL MIDDLEWARES
