@@ -39,7 +39,14 @@ app.use(
   })
 );
 // handle options req for preflight case
-app.options("*", cors());
+app.options(
+  "*",
+  cors({
+    credentials: true,
+    origin: "http://localhost:8080",
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
 // GLOBAL MIDDLEWARES
 //set http headers (need to be before any req res cycle)
