@@ -41,23 +41,16 @@ function setOriginHeader(req, res, next) {
   next();
 }
 
+app.use(setOriginHeader);
+
 app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  }),
-  setOriginHeader
+  })
 );
 // handle options req for preflight case
-app.options(
-  "*",
-  cors({
-    credentials: true,
-    origin: "http://localhost:8080",
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  }),
-  setOriginHeader
-);
+app.options("*", cors());
 
 // GLOBAL MIDDLEWARES
 //set http headers (need to be before any req res cycle)
@@ -107,15 +100,7 @@ app.use(
 app.get("/", function (req, res, next) {
   res.render("index");
 });
-app.use(function (req, res, next) {
-  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080"];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-  next();
-});
+
 // API
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/elections", electionRouter);
