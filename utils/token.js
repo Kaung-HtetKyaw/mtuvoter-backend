@@ -65,13 +65,13 @@ exports.verifyJwtToken = async (token) => {
 
 exports.removeTokenFromResponseInDev = (res, tokens) => {
   let result = {};
-  if (process.env.NODE_ENV === "production") {
-    for (const key in res) {
-      if (!tokens.includes(key)) {
-        result[key] = res[key];
-      }
-    }
-    return result;
-  }
+  //if (process.env.NODE_ENV === "production") {
+    //for (const key in res) {
+      //if (!tokens.includes(key)) {
+        //result[key] = res[key];
+      //}
+   // }
+    //return result;
+  //}
   return res;
 };
