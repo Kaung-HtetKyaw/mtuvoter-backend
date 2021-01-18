@@ -5,14 +5,6 @@ const User = require("../models/User");
 const { excludeFromBodyExcept } = require("../utils/utils");
 const { createVerifyTokenAndSendMail } = require("../utils/email");
 const handler = require("../factory/handler");
-const Storage = require("../services/Storage/Storage");
-
-const storage = new Storage({ width: 500, height: 500 });
-const multerUpload = storage.createMulterUpload();
-
-exports.convertFileToBuffer = multerUpload.single("photo");
-
-exports.uploadFile = handler.uploadFile(storage, "users", User);
 
 exports.createUser = handler.createOne(User);
 exports.deleteUser = handler.deleteOne(User);

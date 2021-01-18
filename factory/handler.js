@@ -3,8 +3,6 @@ const { getQueryByParam } = require("../utils/query");
 const AppError = require("../utils/AppError");
 const APIFeatures = require("../factory/API_Features");
 const Storage = require("../services/Storage/Storage");
-const Log = require("../models/Log");
-const { v4: uuid } = require("uuid");
 const {
   noop,
   getResourceNameFromOriginalUrl,
@@ -111,30 +109,23 @@ function removeElectionTypeFromBody(req) {
   return req.body;
 }
 
-exports.uploadFile = (storage, type, Model) => {
+exports.uploadFile = (storage, Model) => {
   return catchAsyncError(async (req, res, next) => {
+    let existingPhoto;
     if (!req.file) {
       return next();
     }
-    let filename = `${type}-${uuid()}.jpeg`;
-    // take existing photo name if update
-    if (req.method === "PATCH") {
-      const docId = req.params.id || req.user.id;
-      const doc = await Model.findById(docId).select("+photo");
-      if (doc.photo) filename = doc.photo;
+    if (!!req.params.id) {
+      const doc = await Model.findById(req.params.id).select("photo");
+      existingPhoto = doc.photo;
     }
-    // upload file to local machine
-    await storage
-      .upload(req.file.buffer, filename, type)
-      .then(() => {
-        req.file.filename = filename;
-      })
-      .catch((err) => {
-        console.log(err);
-        return next(new AppError("Error uploading image", 500));
-      });
+    req.body.photo = await storage.uploadToCloudinary(
+      req.file.buffer,
+      req.method,
+      existingPhoto
+    );
 
-    return next();
+    next();
   });
 };
 

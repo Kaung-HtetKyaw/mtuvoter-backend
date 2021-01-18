@@ -10,8 +10,6 @@ router
   .route("/")
   .get(electionController.getALlElections)
   .post(
-    electionController.convertFileToBuffer,
-    electionController.uploadFile,
     authController.protect,
     authController.authorize("admin"),
     electionController.createElection

@@ -1,6 +1,9 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const AppError = require("../../utils/AppError");
+const cloudinaryUpload = require("./cloudinary");
+const convertToBase64 = require("./datauri");
+const { getImageNameFromUrl } = require("../../utils/utils");
 
 module.exports = class Storage {
   constructor(resize) {
@@ -22,6 +25,13 @@ module.exports = class Storage {
     });
     return multerUpload;
   }
+  async getResizedBuffer(fileBuffer, width, height) {
+    return await sharp(fileBuffer)
+      .resize(width, height)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toBuffer();
+  }
   // resize the file buffer
   async upload(fileBuffer, name, type) {
     const { width, height } = this.resize;
@@ -30,5 +40,18 @@ module.exports = class Storage {
       .toFormat("jpeg")
       .jpeg({ quality: 90 })
       .toFile(`public/images/${name}`);
+  }
+  async uploadToCloudinary(fileBuffer, method, existingPhoto) {
+    let options = {};
+    console.log(method);
+    if (method === "PATCH") {
+      console.log(existingPhoto);
+      if (!!existingPhoto)
+        options.public_id = getImageNameFromUrl(existingPhoto);
+    }
+    const resizedImage = await this.getResizedBuffer(fileBuffer, 500, 500);
+    const base64Image = convertToBase64(resizedImage);
+    const uploadedImage = await cloudinaryUpload(base64Image.content, options);
+    return uploadedImage.secure_url;
   }
 };

@@ -25,6 +25,7 @@ const tokenRouter = require("./routes/token");
 const ballotRouter = require("./routes/ballot");
 const faqRouter = require("./routes/faq");
 const newsRouter = require("./routes/news");
+const testRouter = require("./routes/test");
 
 const { minutes } = require("./utils/time");
 
@@ -90,15 +91,6 @@ const limiter = rateLimit({
 app.use(hpp());
 
 app.use("/api", limiter);
-
-// const shouldCompress = (req, res) => {
-//   if (req.headers["x-no-compression"]) {
-//     // Will not compress responses, if this header is present
-//     return false;
-//   }
-//   // Resort to standard compression
-//   return compression.filter(req, res);
-// };
 app.use(
   compression({
     threshold: 0,
@@ -119,6 +111,7 @@ app.use("/api/v1/tokens", tokenRouter);
 app.use("/api/v1/ballots", ballotRouter);
 app.use("/api/v1/faqs", faqRouter);
 app.use("/api/v1/news", newsRouter);
+app.use("/api/v1/test", testRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {

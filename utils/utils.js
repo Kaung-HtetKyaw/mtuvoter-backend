@@ -49,3 +49,7 @@ exports.createLog = async (type, req, id) => {
     resource: `${this.getResourceNameFromOriginalUrl(req.originalUrl)} ${id}`,
   });
 };
+
+exports.getImageNameFromUrl = (url) => {
+  return url.match(/[\w-]+.(jpg|png|jpeg)/g)[0].split(".")[0];
+};

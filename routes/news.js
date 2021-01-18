@@ -17,7 +17,11 @@ router
   );
 router
   .route("/:id")
-  .patch(newsController.updateNews)
+  .patch(
+    newsController.convertFileToBuffer,
+    newsController.uploadFile,
+    newsController.updateNews
+  )
   .delete(newsController.deleteNews);
 
 module.exports = router;
