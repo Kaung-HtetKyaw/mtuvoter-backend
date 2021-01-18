@@ -43,9 +43,7 @@ module.exports = class Storage {
   }
   async uploadToCloudinary(fileBuffer, method, existingPhoto) {
     let options = {};
-    console.log(method);
     if (method === "PATCH") {
-      console.log(existingPhoto);
       if (!!existingPhoto)
         options.public_id = getImageNameFromUrl(existingPhoto);
     }
