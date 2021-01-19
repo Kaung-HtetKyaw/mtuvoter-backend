@@ -27,6 +27,7 @@ const faqRouter = require("./routes/faq");
 const newsRouter = require("./routes/news");
 
 const { minutes } = require("./utils/time");
+const { removeFieldsFromObj } = require("./utils/utils");
 
 var app = express();
 app.enable("trust proxy"); // heroku specific
@@ -40,9 +41,7 @@ function setOriginHeader(req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:8080");
   next();
 }
-
 app.use(setOriginHeader);
-
 app.use(
   cors({
     credentials: true,
@@ -101,6 +100,11 @@ app.get("/", function (req, res, next) {
 });
 
 // API
+// remove _id and __v from body to avoid Mongo error
+app.use((req, res, next) => {
+  req.body = removeFieldsFromObj(req.body, ["_id", "id", "__v"]);
+  next();
+});
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/elections", electionRouter);
 app.use("/api/v1/positions", positionRouter);

@@ -53,3 +53,11 @@ exports.createLog = async (type, req, id) => {
 exports.getImageNameFromUrl = (url) => {
   return url.match(/[\w-]+.(jpg|png|jpeg)/g)[0].split(".")[0];
 };
+
+exports.removeFieldsFromObj = (obj, fields) => {
+  let result = {};
+  for (const key in obj) {
+    if (!fields.includes(key)) result[key] = obj[key];
+  }
+  return result;
+};
