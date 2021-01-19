@@ -45,10 +45,9 @@ function sendErrorDev(error, req, res) {
 }
 function sendErrorProd(error, req, res) {
   if (req.originalUrl.startsWith("/api")) {
-    console.log("Hello this is the production error");
-    console.error("Error ❎", error);
     // catch the operational errors
     if (error.isOperational) {
+      console.error("Error ❎", error);
       return res.status(error.statusCode).json({
         status: error.status,
         message: error.message,
