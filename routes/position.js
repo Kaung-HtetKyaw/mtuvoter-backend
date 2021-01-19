@@ -8,7 +8,7 @@ const authController = require("../controllers/auth");
 router.get("/", positionController.getPositionsByElection);
 
 router.use(authController.protect, authController.authorize("admin"));
-// router.use(electionController.raced, electionController.started);
+router.use(electionController.raced, electionController.started);
 
 router.route("/").post(positionController.createPosition);
 router
