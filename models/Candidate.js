@@ -15,15 +15,6 @@ const candidateSchema = new mongoose.Schema(
       required: [true, "Provide candidate name"],
       maxlength: 100,
     },
-    email: {
-      type: String,
-      required: [true, "Please provide candidate email address"],
-      validate: {
-        validator: isEmail,
-        message: "Invalid email address",
-      },
-      unique: true,
-    },
     year: {
       type: String,
       required: [
@@ -78,6 +69,17 @@ const candidateSchema = new mongoose.Schema(
     },
   },
   options
+);
+
+candidateSchema.index(
+  {
+    email: 1,
+    _election: 1,
+    _position: 1,
+  },
+  {
+    unique: true,
+  }
 );
 
 candidateSchema.path("_election").validate({
