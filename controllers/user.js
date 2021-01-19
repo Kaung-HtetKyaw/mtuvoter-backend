@@ -17,7 +17,7 @@ exports.updateMe = catchAsyncError(async (req, res, next) => {
   }
   // filter the allowed body
   const sanitizedBody = excludeFromBodyExcept(
-    { ...req.body, photo: req.file.filename },
+    { ...req.body },
     "email",
     "name",
     "photo"

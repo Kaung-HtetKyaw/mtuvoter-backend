@@ -3,14 +3,6 @@ const { catchAsyncError } = require("../utils/error");
 const Election = require("../models/Election");
 const handler = require("../factory/handler");
 
-const Storage = require("../services/Storage/Storage");
-const storage = new Storage({ width: 500, height: 500 });
-const multerUpload = storage.createMulterUpload();
-
-exports.convertFileToBuffer = multerUpload.single("photo");
-
-exports.uploadFile = handler.uploadFile(storage, "elections", Election);
-
 exports.createElection = handler.createOne(Election);
 exports.updateElection = handler.updateOne(Election, true);
 exports.getElection = handler.getOne(
