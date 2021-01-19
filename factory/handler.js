@@ -125,6 +125,7 @@ exports.uploadFile = (storage, Model) => {
         req.method,
         existingPhoto
       );
+      console.log(req.body.photo);
 
       return next();
     } catch (error) {
