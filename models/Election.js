@@ -36,15 +36,7 @@ const electionSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-    type: {
-      type: String,
-      required: [true, "Election must have a type"],
-      enum: {
-        values: ["student", "teacher"],
-        message: "Invalid election type",
-      },
-      lowercase: true,
-    },
+
     slug: String,
     delete: {
       type: Boolean,

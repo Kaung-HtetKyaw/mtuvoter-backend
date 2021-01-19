@@ -6,6 +6,7 @@ const Storage = require("../services/Storage/Storage");
 const {
   noop,
   getResourceNameFromOriginalUrl,
+  removeFieldsFromObj,
   createLog,
 } = require("../utils/utils");
 // const RedisCache = require("../services/Cache");
@@ -46,7 +47,7 @@ exports.getOne = (Model, populateOptions = "", setCache, filterCb = noop) => {
 exports.updateOne = (Model, filterCb = noop, setCache) => {
   return catchAsyncError(async (req, res, next) => {
     const filter = filterCb(req) || req.params.id;
-    let body = removeElectionTypeFromBody(req);
+    let body = removeFieldsFromObj(req.body, ["_id", "__v", "id"]);
     const doc = await Model.findByIdAndUpdate(
       filter,
       { ...body },

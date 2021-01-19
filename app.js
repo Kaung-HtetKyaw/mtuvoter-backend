@@ -27,7 +27,6 @@ const faqRouter = require("./routes/faq");
 const newsRouter = require("./routes/news");
 
 const { minutes } = require("./utils/time");
-const { removeFieldsFromObj } = require("./utils/utils");
 
 var app = express();
 app.enable("trust proxy"); // heroku specific
@@ -101,11 +100,7 @@ app.get("/", function (req, res, next) {
 
 // API
 // remove _id and __v from body to avoid Mongo error
-app.use((req, res, next) => {
-  req.body = removeFieldsFromObj(req.body, ["_id", "id", "__v"]);
-  console.log(req.body);
-  next();
-});
+
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/elections", electionRouter);
 app.use("/api/v1/positions", positionRouter);
