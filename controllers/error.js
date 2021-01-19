@@ -1,7 +1,6 @@
 const AppError = require("../utils/AppError");
 
 module.exports = (error, req, res, next) => {
-  console.log(error);
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
   if (process.env.NODE_ENV == "development") {
@@ -30,7 +29,6 @@ module.exports = (error, req, res, next) => {
 function sendErrorDev(error, req, res) {
   // error from api
   if (req.originalUrl.startsWith("/api")) {
-    console.log("prod api", error);
     return res.status(error.statusCode).json({
       status: error.status,
       message: error.message,
@@ -47,6 +45,8 @@ function sendErrorDev(error, req, res) {
 }
 function sendErrorProd(error, req, res) {
   if (req.originalUrl.startsWith("/api")) {
+    console.log("Hello this is the production error");
+    console.error("Error ❎", error);
     // catch the operational errors
     if (error.isOperational) {
       return res.status(error.statusCode).json({
