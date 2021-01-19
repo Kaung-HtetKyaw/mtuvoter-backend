@@ -30,6 +30,7 @@ module.exports = (error, req, res, next) => {
 function sendErrorDev(error, req, res) {
   // error from api
   if (req.originalUrl.startsWith("/api")) {
+    console.log("prod api", error);
     return res.status(error.statusCode).json({
       status: error.status,
       message: error.message,
