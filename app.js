@@ -103,6 +103,7 @@ app.get("/", function (req, res, next) {
 // remove _id and __v from body to avoid Mongo error
 app.use((req, res, next) => {
   req.body = removeFieldsFromObj(req.body, ["_id", "id", "__v"]);
+  console.log(req.body);
   next();
 });
 app.use("/api/v1/users", userRouter);
