@@ -119,13 +119,18 @@ exports.uploadFile = (storage, Model) => {
       const doc = await Model.findById(req.params.id).select("photo");
       existingPhoto = doc.photo;
     }
-    req.body.photo = await storage.uploadToCloudinary(
-      req.file.buffer,
-      req.method,
-      existingPhoto
-    );
+    try {
+      req.body.photo = await storage.uploadToCloudinary(
+        req.file.buffer,
+        req.method,
+        existingPhoto
+      );
 
-    next();
+      return next();
+    } catch (error) {
+      console.log(error);
+      return next(new AppError("Error uploading image", 500));
+    }
   });
 };
 
