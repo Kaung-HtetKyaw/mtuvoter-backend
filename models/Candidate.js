@@ -71,17 +71,6 @@ const candidateSchema = new mongoose.Schema(
   options
 );
 
-candidateSchema.index(
-  {
-    email: 1,
-    _election: 1,
-    _position: 1,
-  },
-  {
-    unique: true,
-  }
-);
-
 candidateSchema.path("_election").validate({
   validator: function (value) {
     return Election.exists({ _id: mongoose.Types.ObjectId(value) });
