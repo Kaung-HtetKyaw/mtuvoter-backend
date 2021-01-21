@@ -4,7 +4,7 @@ const Election = require("../models/Election");
 const handler = require("../factory/handler");
 
 exports.createElection = handler.createOne(Election);
-exports.updateElection = handler.updateOne(Election, true);
+exports.updateElection = handler.updateOne(Election);
 exports.getElection = handler.getOne(
   Election,
   {
