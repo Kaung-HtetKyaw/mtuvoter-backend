@@ -25,7 +25,7 @@ const electionSchema = new mongoose.Schema(
       required: [true, "Election must have a end date"],
       validate: {
         validator: function (value) {
-          return value > this.startDate;
+          return new Date(value) > new Date(this.startDate);
         },
       },
     },
