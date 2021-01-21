@@ -49,12 +49,14 @@ exports.updateOne = (Model, filterCb = noop, setCache) => {
     const filter = filterCb(req) || req.params.id;
     // strip imuutable property off from the body
     let body = removeFieldsFromObj(req.body, ["_id", "__v", "id"]);
+    console.log(body);
     const doc = await Model.findByIdAndUpdate(
       filter,
       { ...body },
       {
         new: true,
         runValidators: true,
+        context: "query",
       }
     );
 

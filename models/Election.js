@@ -23,11 +23,6 @@ const electionSchema = new mongoose.Schema(
     endDate: {
       type: Date,
       required: [true, "Election must have a end date"],
-      validate: {
-        validator: function (value) {
-          return new Date(value) > new Date(this.startDate);
-        },
-      },
     },
     about: {
       type: String,
@@ -60,6 +55,10 @@ electionSchema.index(
     unique: true,
   }
 );
+
+electionSchema.path("endDate").validate(function (value) {
+  return new Date(value) > new Date(this.getUpdate().$set.startDate);
+}, "End date must be greater than the start date");
 
 // raced? field to verify the election is over
 electionSchema.virtual("raced").get(function () {
