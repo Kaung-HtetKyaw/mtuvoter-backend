@@ -13,6 +13,7 @@ const electionSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      required: [true, "Provide the election's name"],
     },
     // new Date('2020-12-12:06:00:00')
     startDate: {
@@ -36,12 +37,14 @@ const electionSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-
-    slug: String,
     delete: {
       type: Boolean,
       default: false,
       select: false,
+    },
+    published: {
+      type: Boolean,
+      default: true,
     },
   },
   options
@@ -57,9 +60,6 @@ electionSchema.index(
     unique: true,
   }
 );
-electionSchema.index({
-  slug: 1,
-});
 
 // raced? field to verify the election is over
 electionSchema.virtual("raced").get(function () {
@@ -76,22 +76,6 @@ electionSchema.virtual("candidates", {
   ref: "Candidate",
   foreignField: "_election",
   localField: "_id",
-});
-
-electionSchema.pre("save", function (next) {
-  const curYear = this.startDate.getFullYear();
-  this.name = `${capitalize(this.type)} Union Election ${curYear}`;
-  next();
-});
-
-electionSchema.pre("save", function (next) {
-  const curYear = this.createdAt.getFullYear();
-  this.slug = `${slugify(this.name, {
-    replacement: "-",
-    lower: true,
-    strict: true,
-  })}`;
-  next();
 });
 
 // !delete everything related to the deleted election
