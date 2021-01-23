@@ -25,6 +25,7 @@ const tokenRouter = require("./routes/token");
 const ballotRouter = require("./routes/ballot");
 const faqRouter = require("./routes/faq");
 const newsRouter = require("./routes/news");
+const logRouter = require("./routes/log");
 
 const { minutes } = require("./utils/time");
 
@@ -110,6 +111,7 @@ app.use("/api/v1/tokens", tokenRouter);
 app.use("/api/v1/ballots", ballotRouter);
 app.use("/api/v1/faqs", faqRouter);
 app.use("/api/v1/news", newsRouter);
+app.use("/api/v1/logs", logRouter);
 
 // catch 404 and forward to error handler
 app.all("*", (req, res, next) => {
