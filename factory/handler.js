@@ -89,6 +89,7 @@ exports.getAll = (Model, filterCb, setCache, key) => {
     // }
     res.status(200).json({
       status: "success",
+      results: docs.length,
       data: docs,
     });
   });

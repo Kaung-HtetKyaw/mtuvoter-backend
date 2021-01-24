@@ -77,6 +77,15 @@ electionSchema.virtual("candidates", {
   localField: "_id",
 });
 
+electionSchema.pre(/^find/, async function (next) {
+  this.find({ published: true });
+  next();
+});
+electionSchema.pre("find", function (next) {
+  this.sort({ startDate: -1 });
+  next();
+});
+
 // !delete everything related to the deleted election
 // not implementing yet because i think it's too risky to delete everything related
 // electionSchema.pre('findOneAndDelete',function(next) {

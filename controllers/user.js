@@ -91,6 +91,17 @@ exports.addMod = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getAuthorities = catchAsyncError(async (req, res, next) => {
+  const authorities = await User.find({
+    $or: [{ role: "admin" }, { role: "mod" }],
+  });
+  res.status(200).json({
+    status: "success",
+    results: authorities.length,
+    data: authorities,
+  });
+});
+
 // exports.checkCache = handler.checkCache((req) => {
 //   return req.user.id;
 // });
