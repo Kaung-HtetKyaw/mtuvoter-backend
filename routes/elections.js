@@ -15,7 +15,7 @@ router
     electionController.createElection
   );
 router.get(
-  "/latest-election",
+  "/latest-raced-election",
   authController.protect,
   authController.authorize("admin"),
   electionController.getLatestElection
