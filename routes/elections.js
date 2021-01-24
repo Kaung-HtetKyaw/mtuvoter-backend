@@ -14,6 +14,12 @@ router
     authController.authorize("admin"),
     electionController.createElection
   );
+router.get(
+  "/latest-election",
+  authController.protect,
+  authController.authorize("admin"),
+  electionController.getLatestElection
+);
 // for GET request, id could be either election id or slug
 router
   .route("/:id")

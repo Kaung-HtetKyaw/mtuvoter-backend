@@ -18,6 +18,19 @@ exports.getElection = handler.getOne(
 //   return req.params.id || req.params.election;
 // });
 
+exports.getLatestElection = catchAsyncError(async (req, res, next) => {
+  const election = await Election.findOne({
+    endDate: {
+      $lte: Date.now(),
+    },
+  }).populate("positions");
+
+  res.status(200).json({
+    status: "success",
+    data: election,
+  });
+});
+
 exports.getALlElections = handler.getAll(Election, (req) => {
   let { year } = req.query;
   if (year) {

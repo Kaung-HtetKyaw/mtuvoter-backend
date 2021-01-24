@@ -3,6 +3,7 @@ const router = express.Router({ mergeParams: true });
 
 const authController = require("../controllers/auth");
 const ballotController = require("../controllers/ballot");
+const electionController = require("../controllers/election");
 
 router.get(
   "/candidate-vote-by-student",
@@ -20,5 +21,6 @@ router.get(
   "/elections/:election/positions/:position",
   ballotController.getBallotCountForCandidateByPosition
 );
+router.get("/previous-result", electionController.getLatestElection);
 
 module.exports = router;

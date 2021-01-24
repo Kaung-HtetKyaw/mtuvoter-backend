@@ -82,7 +82,7 @@ electionSchema.pre(/^find/, async function (next) {
   next();
 });
 electionSchema.pre("find", function (next) {
-  this.sort({ startDate: -1 });
+  this.sort("-startDate");
   next();
 });
 
