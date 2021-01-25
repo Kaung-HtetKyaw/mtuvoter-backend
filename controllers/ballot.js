@@ -5,7 +5,7 @@ const Ballot = require("../models/Ballot");
 
 exports.getBallotCountForCandidateByStudent = catchAsyncError(
   async (req, res, next) => {
-    const { election, position, candidate } = req.body;
+    const { election, position, candidate } = req.params;
     const result = await Ballot.aggregate([
       {
         $match: {
@@ -83,7 +83,7 @@ exports.getBallotCountForElectionByStudent = catchAsyncError(
   async (req, res, next) => {
     const result = await Ballot.aggregate([
       {
-        $match: { _election: mongoose.Types.ObjectId(req.body.election) },
+        $match: { _election: mongoose.Types.ObjectId(req.params.election) },
       },
       {
         $group: {
@@ -109,7 +109,7 @@ exports.getBallotCountForElectionByStudent = catchAsyncError(
 );
 
 exports.getBallotCountByElection = catchAsyncError(async (req, res, next) => {
-  const count = await Ballot.countDocuments({ _election: req.body.election });
+  const count = await Ballot.countDocuments({ _election: req.params.election });
   res.status(200).json({
     status: "success",
     data: count,

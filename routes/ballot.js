@@ -6,11 +6,11 @@ const ballotController = require("../controllers/ballot");
 const electionController = require("../controllers/election");
 
 router.get(
-  "/candidate-vote-by-student",
+  "/candidate-vote-by-student/elections/:election/positions/:position/candidates/:candidate",
   ballotController.getBallotCountForCandidateByStudent
 );
 router.get(
-  "/election-vote-by-student",
+  "/election-vote-by-student/elections/:election",
   ballotController.getBallotCountForElectionByStudent
 );
 router.get(
@@ -21,6 +21,5 @@ router.get(
   "/elections/:election/positions/:position",
   ballotController.getBallotCountForCandidateByPosition
 );
-router.get("/previous-result", electionController.getLatestElection);
 
 module.exports = router;
