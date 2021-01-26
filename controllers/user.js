@@ -104,6 +104,21 @@ exports.addMod = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.removeMod = catchAsyncError(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email, role: "mod" });
+  if (!user) {
+    return next(
+      new AppError("There is no moderator with that email address", 404)
+    );
+  }
+  user.role = "user";
+  user.save({ validateBeforeSave: false });
+  res.status(200).json({
+    status: "success",
+    data: user,
+  });
+});
+
 exports.getAuthorities = catchAsyncError(async (req, res, next) => {
   const authorities = await User.find({
     $or: [{ role: "admin" }, { role: "mod" }],

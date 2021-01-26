@@ -22,7 +22,10 @@ router
 router.route("/vote-status").get(userController.getVoteStatus);
 
 router.use(authController.authorize("admin"));
-router.patch("/roles", userController.addMod);
+router
+  .route("/roles")
+  .post(userController.addMod)
+  .patch(userController.removeMod);
 router.get("/authorities", userController.getAuthorities);
 router.route("/").get(userController.getUsers);
 router.route("/:id").delete(userController.deleteUser);
