@@ -42,11 +42,13 @@ exports.excludeFromBodyExcept = (body, ...fields) => {
 exports.getResourceNameFromOriginalUrl = (url) => {
   return url.split("/api/v1/")[1].split("/")[0];
 };
-exports.createLog = async (type, req, id) => {
+exports.createLog = async (type, req, id, resource) => {
   const log = await Log.create({
     type,
     by: req.user.email,
-    resource: `${this.getResourceNameFromOriginalUrl(req.originalUrl)} ${id}`,
+    resource:
+      resource ||
+      `${this.getResourceNameFromOriginalUrl(req.originalUrl)} ${id}`,
   });
 };
 

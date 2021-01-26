@@ -5,6 +5,7 @@ const User = require("../models/User");
 const { excludeFromBodyExcept } = require("../utils/utils");
 const { createVerifyTokenAndSendMail } = require("../utils/email");
 const handler = require("../factory/handler");
+const Log = require("../models/Log");
 
 exports.createUser = handler.createOne(User);
 exports.deleteUser = handler.deleteOne(User);
@@ -82,6 +83,9 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
 
 exports.addMod = catchAsyncError(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError("Cannot find the user", 404));
+  }
   if (user.role === "admin" || user.role === "mod") {
     return next(
       new AppError("This user already have Admin or Moderator priviledges", 400)
@@ -89,9 +93,11 @@ exports.addMod = catchAsyncError(async (req, res, next) => {
   }
   user.role = "mod";
   user.save({ validateBeforeSave: false });
-  if (!user) {
-    return next(new AppError("Cannot find the user", 404));
-  }
+  const log = await Log.create({
+    type: "add",
+    by: req.user.email,
+    resource: `${user.email} as Moderator`,
+  });
   res.status(200).json({
     status: "success",
     data: user,
