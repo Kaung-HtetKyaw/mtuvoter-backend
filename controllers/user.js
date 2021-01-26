@@ -81,7 +81,14 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addMod = catchAsyncError(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.body.id, { role: "mod" });
+  const user = await User.findOne({ email: req.body.email });
+  if (user.role === "admin" || user.role === "mod") {
+    return next(
+      new AppError("This user already have Admin or Moderator priviledges", 400)
+    );
+  }
+  user.role = "mod";
+  user.save({ validateBeforeSave: false });
   if (!user) {
     return next(new AppError("Cannot find the user", 404));
   }
