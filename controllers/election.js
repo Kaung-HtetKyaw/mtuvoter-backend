@@ -46,7 +46,7 @@ exports.deleteElection = handler.deleteOne(Election);
 
 exports.started = catchAsyncError(async (req, res, next) => {
   // make sure election comes first
-  const electionId = req.body.election || req.params.id;
+  const electionId = req.body.election || req.params.id || req.body._election;
   const election = await Election.findById(electionId).select("+startDate");
   if (Date.now() > election.startDate) {
     return next(
@@ -58,9 +58,24 @@ exports.started = catchAsyncError(async (req, res, next) => {
   }
   next();
 });
+exports.notStarted = catchAsyncError(async (req, res, next) => {
+  // make sure election comes first
+  const electionId = req.body.election || req.params.id || req.body._election;
+  const election = await Election.findById(electionId).select("+startDate");
+  if (Date.now() < election.startDate) {
+    return next(
+      new AppError(
+        "You cannot perform this action because election has not started yet",
+        400
+      )
+    );
+  }
+  next();
+});
 
 exports.raced = catchAsyncError(async (req, res, next) => {
-  const electionID = req.body.election || req.params.election;
+  const electionID =
+    req.body.election || req.params.election || req.body._election;
   if (!electionID) {
     return next(new AppError("Invalid election", 404));
   }

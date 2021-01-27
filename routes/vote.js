@@ -8,7 +8,7 @@ router
   .route("/")
   .post(
     electionController.raced,
-    electionController.started,
+    electionController.notStarted,
     voteController.checkVoteToken,
     voteController.hasVoted,
     voteController.vote

@@ -9,7 +9,7 @@ router
   .route("/")
   .post(
     electionController.raced,
-    electionController.started,
+    electionController.notStarted,
     tokenController.createVoteToken
   );
 
