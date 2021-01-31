@@ -1,9 +1,7 @@
 extends baseEmail
 
 block content
-  p Hi #{firstName},
-  p Welcome to MTU Voter, we're glad to have you 🎉🙏
-  p Website is not yet implemented
+  h1 Welcome to MTU Voter, we're glad to have you, #{firstName} 🎉🙏
   table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
     tbody
       tr
@@ -12,6 +10,6 @@ block content
             tbody
               tr
                 td
-                  a(href=`${url}`, target='_blank') Upload user photo
+                  a(href=`${url}`, target='_blank') Please Log in Here
   p If you need any help with the features we provided , please don't hesitate to contact us!
-  p - Mandalay Technological University Code Lab
+  bold  Mandalay Technological University Code Lab

@@ -1,8 +1,7 @@
 extends baseEmail
 
 block content
-  p Hi #{firstName},
-  p Please verify your Natours account with the link below.
+  h2 Please verify your Natours account with the link below.
   p #{url}
   table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
     tbody
@@ -14,5 +13,5 @@ block content
                 td
                   - const token = url.split('/verify/')[1]
                   - const baseUrl = url.split('/api')[0];
-                  a(href=`${baseUrl}/verify/${token}`, target='_blank') Verify your account
+                  a(href=`${url}`, target='_blank') Verify your account
   p If you has already verified your account, please ignore this message 👩‍❤️‍.

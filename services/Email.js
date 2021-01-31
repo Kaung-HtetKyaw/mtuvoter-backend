@@ -48,13 +48,14 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send("welcome", "Welcome to MTU Voter");
   }
-  async sendVerfication() {
-    await this.send("verify", "Plesae verfiy your account");
+  async sendVerfication(token) {
+    await this.send("verify", "Plesae verfiy your account", { token });
   }
-  async sendPasswordReset() {
+  async sendPasswordReset(token) {
     await this.send(
       "passwordReset",
-      "Reset your password here (valid for 10 mins)"
+      "Reset your password here (valid for 10 mins)",
+      { token }
     );
   }
   // send bulk mails

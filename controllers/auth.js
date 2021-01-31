@@ -109,7 +109,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
   );
   const auth_token = createJWTCookie({ id: user._id }, req, res, "jwt");
   try {
-    const url = `${getBaseUrl(req)}/users/me`;
+    const url = `${process.env.FRONT_END}/login`;
     await new Email(user, url).sendWelcome();
     res.status(200).json(
       removeTokenFromResponseInDev(
@@ -235,8 +235,8 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
   try {
     const resetToken = user.generateResetPasswordToken();
     await user.save({ validateBeforeSave: false });
-    const url = `${getBaseUrl(req)}/users/reset/${resetToken}`;
-    await new Email(user, url).sendPasswordReset();
+    const url = `${process.env.FRONT_END}/reset/${resetToken}`;
+    await new Email(user, url).sendPasswordReset(resetToken);
     res.status(200).json({
       status: "success",
       message: "Password reset link has been sent to you email address",
