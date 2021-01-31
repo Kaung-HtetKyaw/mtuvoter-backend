@@ -11,8 +11,8 @@ router.route("/login").post(authController.login);
 router.route("/logout").get(authController.protect, authController.logout);
 router.route("/forgot").post(authController.forgotPassword);
 router.route("/reset/:token").patch(authController.resetPassword);
-router.route("/updatePassword").patch(authController.updatePassword);
-router.route("/guest").get(authController.guestLogin);
+router.route("/pass").patch(authController.updatePassword);
+router.route("/guest").post(authController.guestLogin);
 
 router.use(authController.protect);
 router
