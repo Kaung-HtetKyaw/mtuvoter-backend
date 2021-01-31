@@ -175,7 +175,9 @@ exports.login = catchAsyncError(async (req, res, next) => {
 exports.logout = catchAsyncError(async (req, res, next) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + seconds(0)),
+    sameSite: "None",
     httpOnly: true,
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https", //* heroku specific
   });
   res.status(200).json({
     status: "success",
