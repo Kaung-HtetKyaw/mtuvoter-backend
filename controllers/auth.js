@@ -236,13 +236,13 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
     const resetToken = user.generateResetPasswordToken();
     await user.save({ validateBeforeSave: false });
     const url = `${process.env.FRONT_END}/reset/${resetToken}`;
-    await new Email(user, url).sendPasswordReset(resetToken);
+    console.log(url);
+    await new Email(user, url).sendPasswordReset(resetToken, url);
     res.status(200).json({
       status: "success",
       message: "Password reset link has been sent to you email address",
     });
   } catch (error) {
-    console.log(error);
     user.passwordResetToken = undefined;
     user.passwordResetExpiresAt = undefined;
     await user.save({ validateBeforeSave: false });

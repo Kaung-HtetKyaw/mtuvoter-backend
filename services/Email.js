@@ -51,11 +51,11 @@ module.exports = class Email {
   async sendVerfication(token) {
     await this.send("verify", "Plesae verfiy your account", { token });
   }
-  async sendPasswordReset(token) {
+  async sendPasswordReset(token, url) {
     await this.send(
       "passwordReset",
       "Reset your password here (valid for 10 mins)",
-      { token }
+      { token, url }
     );
   }
   // send bulk mails
