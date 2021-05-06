@@ -273,7 +273,7 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
   await user.save();
   // excluding password from response
   user.password = undefined;
-  const token = createJWTCookie({ user: _id }, req, res, "jwt");
+  const token = createJWTCookie({ user: user._id }, req, res, "jwt");
   res.status(200).json(
     removeTokenFromResponseInDev(
       {
