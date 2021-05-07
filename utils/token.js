@@ -17,6 +17,7 @@ exports.createJWTCookie = (
   cookieName,
   expiresIn = days(60)
 ) => {
+  console.log
   const token = this.generateToken(payload);
   let cookieOptions = {
     expires: new Date(Date.now() + expiresIn),

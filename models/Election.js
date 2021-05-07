@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const { days } = require("../utils/time");
+const { days, hours } = require("../utils/time");
 const { capitalize } = require("../utils/utils");
 const AppError = require("../utils/AppError");
 
@@ -56,8 +56,16 @@ electionSchema.index(
   }
 );
 
+electionSchema.path("startDate").validate(function (value) {
+  return new Date(value) > Date.now() + hours(6);
+}, "Start Date must be at least 6 hours from now");
+
 electionSchema.path("endDate").validate(function (value) {
-  return new Date(value) > new Date(this.getUpdate().$set.startDate);
+  if(this.getUpdate) {
+    return new Date(value) > new Date(this.getUpdate().$set.startDate);
+  }
+  return new Date(value) > new Date(this.startDate);
+  
 }, "End date must be greater than the start date");
 
 // raced? field to verify the election is over
