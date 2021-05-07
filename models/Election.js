@@ -73,6 +73,10 @@ electionSchema.virtual("raced").get(function () {
   return Date.now() > this.endDate;
 });
 
+electionSchema.virtual("started").get(function () {
+  return this.startDate > Date.now();
+})
+
 electionSchema.virtual("positions", {
   ref: "Post",
   foreignField: "_election",
