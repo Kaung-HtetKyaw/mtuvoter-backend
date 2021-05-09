@@ -73,10 +73,10 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
     _post,
     _v_t:req.voting_token_id,
   });
-  const statusCode = voted ? 200 : 400;
-  const status = voted ? "success" : "error";
-  res.status(statusCode).json({
-    status,
+
+  res.status(200).json({
+    status:"success",
+    data:voted
   });
 });
 
