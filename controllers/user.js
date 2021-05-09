@@ -66,16 +66,15 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
   const {
     election: _election,
     position: _post,
-    candidate: _candidate,
   } = req.body;
 
   const voted = await Ballot.exists({
     _election,
     _post,
-    _candidate,
+    _v_t:req.voting_token_id,
   });
-  const statusCode = voted ? 400 : 200;
-  const status = voted ? "error" : "success";
+  const statusCode = voted ? 200 : 400;
+  const status = voted ? "success" : "error";
   res.status(statusCode).json({
     status,
   });

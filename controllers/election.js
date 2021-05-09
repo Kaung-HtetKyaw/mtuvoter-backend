@@ -48,7 +48,7 @@ exports.started = catchAsyncError(async (req, res, next) => {
   // make sure election comes first
   const electionId = req.body.election || req.params.id || req.body._election;
   const election = await Election.findById(electionId).select("+startDate");
-  if (Date.now() > election.startDate) {
+  if (Date.now() > new Date(election.startDate)) {
     return next(
       new AppError(
         "You cannot perform this action because election has already started",
@@ -62,7 +62,7 @@ exports.notStarted = catchAsyncError(async (req, res, next) => {
   // make sure election comes first
   const electionId = req.body.election || req.params.id || req.body._election;
   const election = await Election.findById(electionId).select("+startDate");
-  if (Date.now() < election.startDate) {
+  if (Date.now() < new Date(election.startDate)) {
     return next(
       new AppError(
         "You cannot perform this action because election has not started yet",

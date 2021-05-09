@@ -22,7 +22,7 @@ router
   .route("/me")
   .patch(userController.updateMe)
   .get(userController.getMe, userController.getUser);
-router.route("/vote-status").get(userController.getVoteStatus);
+router.route("/vote-status").get(voteController.checkVoteToken,userController.getVoteStatus);
 
 router.use(authController.authorize("admin"));
 router

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 const { days, hours } = require("../utils/time");
-const { capitalize } = require("../utils/utils");
+const { capitalize,ConvertISODateToMMDate } = require("../utils/utils");
 const AppError = require("../utils/AppError");
 
 const options = {

@@ -63,3 +63,11 @@ exports.removeFieldsFromObj = (obj, fields) => {
   }
   return result;
 };
+
+exports.ConvertISODateToMMDate = function (date) {
+  let originalDate = new Date(date);
+
+  originalDate.setHours(originalDate.getHours() - 6);
+  originalDate.setMinutes(originalDate.getMinutes() - 30);
+  return originalDate;
+}
