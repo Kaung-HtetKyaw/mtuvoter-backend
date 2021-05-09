@@ -5,9 +5,7 @@ exports.STUDENT_TYPE = [
   "fourth",
   "fifth",
   "sixth",
-  "gradudate",
-  "master",
-  "phd",
+  "others",
 ];
 
 // <TODO> add engineering departments
