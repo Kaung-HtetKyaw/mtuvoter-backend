@@ -66,7 +66,7 @@ exports.getVoteStatus = catchAsyncError(async (req, res, next) => {
   const {
     election: _election,
     position: _post,
-  } = req.body;
+  } = req.params;
 
   const voted = await Ballot.exists({
     _election,
