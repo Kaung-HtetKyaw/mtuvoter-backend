@@ -74,7 +74,7 @@ electionSchema.virtual("raced").get(function () {
 });
 
 electionSchema.virtual("started").get(function () {
-  return this.startDate > Date.now();
+  return Date.now() > this.startDate;
 })
 
 electionSchema.virtual("positions", {
