@@ -16,14 +16,14 @@ router
   .patch(authController.updatePassword)
   .post(authController.forgotPassword);
 router.route("/guest").post(authController.guestLogin);
+router.route("/vote-status/elections/:election/positions/:position")
+  .get(voteController.checkVoteToken,userController.getVoteStatus);
 
 router.use(authController.protect);
 router
   .route("/me")
   .patch(userController.updateMe)
   .get(userController.getMe, userController.getUser);
-router.route("/vote-status/elections/:election/positions/:position")
-  .get(voteController.checkVoteToken,userController.getVoteStatus);
 
 router.use(authController.authorize("admin"));
 router
