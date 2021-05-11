@@ -97,3 +97,26 @@ exports.raced = catchAsyncError(async (req, res, next) => {
   }
   next();
 });
+
+
+exports.publishElection = catchAsyncError(async (req,res,next) => {
+  await changeElectionPublishedFlag(req,res,next,true)
+})
+
+exports.unpublishElection = catchAsyncError(async (req,res,next) => {
+  await changeElectionPublishedFlag(req,res,next,false);
+})
+
+async function changeElectionPublishedFlag(req,res,next,flag) {
+  let election = await Election.findByIdAndUpdate(req.params.id,{published:flag},{
+    new:true,
+    runValidators:true
+  });
+  if(!election) {
+    return next(new AppError("Election no longer exists",404))
+  }
+  res.status(200).json({
+    status:'success',
+    data:election
+  })
+}

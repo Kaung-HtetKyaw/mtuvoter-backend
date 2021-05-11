@@ -39,7 +39,7 @@ const electionSchema = new mongoose.Schema(
     },
     published: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   options
@@ -89,10 +89,6 @@ electionSchema.virtual("candidates", {
   localField: "_id",
 });
 
-electionSchema.pre(/^find/, async function (next) {
-  this.find({ published: true });
-  next();
-});
 electionSchema.pre("find", function (next) {
   this.sort("-startDate");
   next();

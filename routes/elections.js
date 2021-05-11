@@ -21,6 +21,18 @@ router.get(
   electionController.getLatestElection
 );
 // for GET request, id could be either election id or slug
+router.route('/:id/publish')
+      .patch(
+        authController.protect,
+        authController.authorize("admin","mod"),
+        electionController.publishElection
+        )
+router.route('/:id/unpublish')
+      .patch(
+        authController.protect,
+        authController.authorize("admin","mod"),
+        electionController.unpublishElection
+        )
 router
   .route("/:id")
   .patch(

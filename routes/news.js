@@ -9,7 +9,10 @@ router.get("/:id", newsController.getNews);
 
 router.use(authController.protect, authController.authorize("admin", "mod"));
 router.route("/:id/publish")
-      .patch(newsController.publishNews)
+      .patch(newsController.publishNews);
+router.route("/:id/unpublish")
+      .patch(newsController.unpublishNews)
+
 router
   .route("/")
   .post(

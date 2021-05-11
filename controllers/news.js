@@ -49,6 +49,22 @@ exports.publishNews = catchAsyncError(async (req,res,next) => {
   })
 })
 
+exports.unpublishNews = catchAsyncError(async(req,res,next)=>{
+  let news = await News.findByIdAndUpdate(req.params.id,{published:false},{
+    new:true,
+    runValidators:true
+  })
+  if(!news) {
+    return next(new AppError("News no longer exists",404))
+  }
+
+  res.status(200).json({
+    status:'success',
+    data:news
+  })
+
+})
+
 
 exports.updateNews = handler.updateOne(News);
 exports.getAllNews = handler.getAll(News,(req)=>{
