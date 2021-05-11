@@ -8,6 +8,8 @@ router.get("/", newsController.getAllNews);
 router.get("/:id", newsController.getNews);
 
 router.use(authController.protect, authController.authorize("admin", "mod"));
+router.route("/:id/publish")
+      .patch(newsController.publishNews)
 router
   .route("/")
   .post(

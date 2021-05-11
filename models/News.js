@@ -20,6 +20,10 @@ const newsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  published:{
+    type:Boolean,
+    default:false
+  }
 });
 
 const News = mongoose.model("New", newsSchema);
