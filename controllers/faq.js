@@ -12,5 +12,5 @@ const FAQ = require("../models/FAQ");
 exports.creatFAQ = handler.createOne(FAQ);
 exports.updateFAQ = handler.updateOne(FAQ);
 exports.getFAQ = handler.getOne(FAQ);
-exports.getAllFAQ = handler.getAll(FAQ, noop, true, "mtuvoter-faq");
+exports.getAllFAQ = handler.getAll(FAQ, noop);
 exports.deleteFAQ = handler.deleteOne(FAQ);

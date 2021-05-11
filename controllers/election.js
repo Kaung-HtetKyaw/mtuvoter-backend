@@ -32,15 +32,22 @@ exports.getLatestElection = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getALlElections = handler.getAll(Election, (req) => {
+  let result={};
+  // check for year query
   let { year } = req.query;
   if (year) {
-    return {
-      startDate: {
+      result.startDate= {
         $gte: new Date(`${year}-01-01`),
         $lte: new Date(`${year}-12-01`),
-      },
-    };
+      }
   }
+  // check for user info
+  let isAuth = req.user && (req.user.role === 'admin' || req.user.role === 'mod');
+  if(isAuth) {
+    result.published = true
+  }
+   return {...result};
+
 });
 exports.deleteElection = handler.deleteOne(Election);
 

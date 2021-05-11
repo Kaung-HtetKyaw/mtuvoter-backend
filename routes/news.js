@@ -4,7 +4,7 @@ const router = express.Router({ mergeParams: true });
 const newsController = require("../controllers/news");
 const authController = require("../controllers/auth");
 
-router.get("/", newsController.getAllNews);
+router.get("/",authController.includeUserInfo, newsController.getAllNews);
 router.get("/:id", newsController.getNews);
 
 router.use(authController.protect, authController.authorize("admin", "mod"));

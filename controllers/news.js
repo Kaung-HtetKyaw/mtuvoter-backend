@@ -6,6 +6,7 @@ const News = require("../models/News");
 const Email = require("../services/Email");
 const User = require("../models/User");
 const { getBaseUrl, createLog } = require("../utils/utils");
+const APIFeatures = require("../factory/API_Features");
 
 const Storage = require("../services/Storage/Storage");
 
@@ -48,7 +49,11 @@ exports.publishNews = catchAsyncError(async (req,res,next) => {
   })
 })
 
+
 exports.updateNews = handler.updateOne(News);
-exports.getAllNews = handler.getAll(News);
+exports.getAllNews = handler.getAll(News,(req)=>{
+  let isAuth = req.user && (req.user.role === 'admin' || req.user.role === 'mod');
+  return isAuth ? {} : {published:true}
+});
 exports.getNews = handler.getOne(News, "");
 exports.deleteNews = handler.deleteOne(News);

@@ -318,3 +318,20 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
     )
   );
 });
+
+exports.includeUserInfo = catchAsyncError(async (req, res, next) => {
+  const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
+  if (!token) {
+    return next();
+  }
+  const decodedJwt = await verifyJwtToken(token);
+  const user = await User.findById(decodedJwt.id).select("+role");
+  if (!user) {
+    return next();
+  }
+  const pwdChangedAfterJwtIssued = user.passwordChangedAfterIssued(
+    decodedJwt.iat
+  );
+  req.user = user;
+  next();
+});
