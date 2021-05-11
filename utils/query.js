@@ -20,11 +20,11 @@ exports.normalizeQueryString = (queryString, excluded_query) => {
   return result;
 };
 
-exports.getQueryByParam = (Model, param) => {
+exports.getQueryByParam = (Model, param, filter={}) => {
   if (param.split("-").length > 1) {
-    return Model.findOne({ slug: param });
+    return Model.findOne({ slug: param, ...filter });
   }
-  return Model.findById(param);
+  return Model.findOne({id:param, ...filter});
 };
 
 exports.excludeFieldsFromBody = (body, fields) => {

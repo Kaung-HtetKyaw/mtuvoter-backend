@@ -11,7 +11,11 @@ exports.getElection = handler.getOne(
     path: "positions candidates",
     select: "-__v ",
   },
-  true
+  (req) => {
+    let isAuth = !!req.user && (req.user.role === 'admin' || req.user.role === 'mod');
+    return isAuth?{}:{published:true}
+  }
+
 );
 
 // exports.checkCache = handler.checkCache((req) => {

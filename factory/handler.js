@@ -24,14 +24,15 @@ exports.createOne = (Model) => {
   });
 };
 
-exports.getOne = (Model, populateOptions = "", setCache, filterCb = noop) => {
+exports.getOne = (Model, populateOptions = "",filterCb = noop,setCache,) => {
   return catchAsyncError(async (req, res, next) => {
-    let query = getQueryByParam(Model, req.params.id);
-    console.log(req.user);
+    // set {} as default if filterCb is noop
+    let filter = !!filterCb(req)?filterCb(req):{};
+    let query = getQueryByParam(Model, req.params.id, filter);
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
     if (!doc) {
-      return next(new AppError("Cannot find election", 404));
+      return next(new AppError("Cannot find the resource", 404));
     }
     // // set new record
     // if (setCache) {
