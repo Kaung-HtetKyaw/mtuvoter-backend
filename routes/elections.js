@@ -8,7 +8,7 @@ const authController = require("../controllers/auth");
 
 router
   .route("/")
-  .get(electionController.getALlElections)
+  .get(authController.includeUserInfo,electionController.getALlElections)
   .post(
     authController.protect,
     authController.authorize("admin"),

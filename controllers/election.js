@@ -42,8 +42,8 @@ exports.getALlElections = handler.getAll(Election, (req) => {
       }
   }
   // check for user info
-  let isAuth = req.user && (req.user.role === 'admin' || req.user.role === 'mod');
-  if(isAuth) {
+  let isAuth = !!req.user && (req.user.role === 'admin' || req.user.role === 'mod');
+  if(!isAuth) {
     result.published = true
   }
    return {...result};
