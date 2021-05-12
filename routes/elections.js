@@ -40,7 +40,7 @@ router
     authController.authorize("admin"),
     electionController.updateElection
   )
-  .get(electionController.getElection)
+  .get(authController.includeUserInfo,electionController.getElection)
   .delete(
     authController.protect,
     authController.authorize("admin"),

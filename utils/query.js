@@ -1,4 +1,5 @@
 const { makeMap } = require("./utils");
+const mongoose = require('mongoose')
 
 exports.normalizeQueryOperator = (queryString) => {
   return JSON.parse(
@@ -21,10 +22,12 @@ exports.normalizeQueryString = (queryString, excluded_query) => {
 };
 
 exports.getQueryByParam = (Model, param, filter={}) => {
+  console.log(param)
+  console.log({ slug: param, ...filter })
   if (param.split("-").length > 1) {
     return Model.findOne({ slug: param, ...filter });
   }
-  return Model.findOne({id:param, ...filter});
+  return Model.findOne({_id:mongoose.Types.ObjectId(param), ...filter});
 };
 
 exports.excludeFieldsFromBody = (body, fields) => {
