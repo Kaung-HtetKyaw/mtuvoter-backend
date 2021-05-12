@@ -5,7 +5,7 @@ const newsController = require("../controllers/news");
 const authController = require("../controllers/auth");
 
 router.get("/",authController.includeUserInfo, newsController.getAllNews);
-router.get("/:id", newsController.getNews);
+router.get("/:id",authController.includeUserInfo, newsController.getNews);
 
 router.use(authController.protect, authController.authorize("admin", "mod"));
 router.route("/:id/publish")
