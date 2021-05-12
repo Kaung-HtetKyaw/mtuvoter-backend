@@ -129,6 +129,37 @@ exports.getAuthorities = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.subscribe = catchAsyncError(async (req,res,next) => {
+  let user = await User.findByIdAndUpdate(req.user._id,{subscribed:true},{
+    new:true,
+    runValidators:true
+  })
+  if(!user) {
+    return next(new AppError('User not found',404))
+  }
+  res.status(200).json({
+    status:'success',
+    data:user
+  })
+})
+
+exports.unsubscribe = catchAsyncError(async (req,res,next) => {
+  let user = await User.findByIdAndUpdate(req.user._id,{subscribed:false},{
+    new:true,
+    runValidators:true
+  })
+  if(!user) {
+    return next(new AppError('User not found',404))
+  }
+  res.status(200).json({
+    status:'success',
+    data:user
+  })
+})
+
+
+
+
 // exports.checkCache = handler.checkCache((req) => {
 //   return req.user.id;
 // });

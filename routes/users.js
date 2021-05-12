@@ -20,10 +20,15 @@ router.route("/vote-status/elections/:election/positions/:position")
   .get(voteController.checkVoteToken,userController.getVoteStatus);
 
 router.use(authController.protect);
+router.route('/me/subscribe')
+      .patch(userController.subscribe);
+router.route('/me/unsubscribe')
+      .patch(userController.unsubscribe);
 router
   .route("/me")
   .patch(userController.updateMe)
   .get(userController.getMe, userController.getUser);
+
 
 router.use(authController.authorize("admin"));
 router
