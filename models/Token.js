@@ -13,7 +13,7 @@ const tokenSchema = new mongoose.Schema({
   },
   _election: {
     type: mongoose.Schema.ObjectId,
-    required: [true, "Token must belong to an election"],
+    required: false,
   },
   createdAt: {
     type: Date,
@@ -25,6 +25,7 @@ tokenSchema.index(
   {
     SID: 1,
     _election: 1,
+    token:1
   },
   {
     unique: true,

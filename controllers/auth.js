@@ -7,6 +7,7 @@ const {
   removeTokenFromResponseInDev,
 } = require("../utils/token");
 const { createVerifyTokenAndSendMail } = require("../utils/email");
+const {generateHashedAndUnhashedCryptoToken} = require('../utils/token')
 
 const { getBaseUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
@@ -66,6 +67,10 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     name,
     SID,
   } = req.body;
+  let exists = await User.exists({SID});
+  if(exists) {
+    return next(new AppError('There is already an user with that SID',400))
+  }
   let user = await User.create({
     email,
     password,
@@ -75,7 +80,12 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     SID,
   });
   // creating token here because creating in pre save hook will creat token everytime updating user happens like updat password, creating tokens
-  const vote_token = await Token.create({ SID });
+  const { hashed, unhashed } = generateHashedAndUnhashedCryptoToken(
+    process.env.CRYPTO_ALGO,
+    process.env.CRYPTO_BYTES_SHORT
+  );
+
+  const vote_token = await Token.create({ token: hashed, SID });
   user._v_t = vote_token._id;
 
   // send verification mail
@@ -89,7 +99,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
     verifyTokenExpiresAt: { $gt: Date.now() },
   });
   if (!user) {
-    return next(new AppError("Invalid token", 404));
+    return next(new AppError("token", 404));
   }
   if (user.verified === true) {
     return next(new AppError("Your account is already verified", 400));
@@ -321,11 +331,13 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
 
 exports.includeUserInfo = catchAsyncError(async (req, res, next) => {
   const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
+  console.log('jwt',token)
   if (!token) {
     return next();
   }
   const decodedJwt = await verifyJwtToken(token);
   const user = await User.findById(decodedJwt.id).select("+role");
+
   if (!user) {
     return next();
   }
