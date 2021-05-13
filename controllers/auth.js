@@ -99,7 +99,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
     verifyTokenExpiresAt: { $gt: Date.now() },
   });
   if (!user) {
-    return next(new AppError("token", 404));
+    return next(new AppError("User not found", 404));
   }
   if (user.verified === true) {
     return next(new AppError("Your account is already verified", 400));
