@@ -35,11 +35,23 @@ app.enable("trust proxy"); // heroku specific
 function setOriginHeader(req, res, next) {
   const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080"];
   const origin = req.headers.origin;
+  setCacheControlHeader(req,res,next)
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
   res.header("Access-Control-Allow-Origin", "http://localhost:8080");
   next();
+}
+function setCacheControlHeader(req,res,next) {
+    // here you can define period in second, this one is 5 minutes
+    const period = 60 * 5 
+    // you only want to cache for GET requests
+    if (req.method == 'GET') {
+      res.set('Cache-control', `public, max-age=${period}`)
+    } else {
+      // for the other requests set strict no caching parameters
+      res.set('Cache-control', `no-store`)
+    }
 }
 app.use(setOriginHeader);
 app.use(
