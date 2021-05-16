@@ -35,7 +35,6 @@ app.enable("trust proxy"); // heroku specific
 function setOriginHeader(req, res, next) {
   const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080"];
   const origin = req.headers.origin;
-  setCacheControlHeader(req,res,next)
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
