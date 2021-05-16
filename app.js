@@ -38,7 +38,7 @@ function setOriginHeader(req, res, next) {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.header("Access-Control-Allow-Origin", "https://practical-mestorf-eaedc4.netlify.app");
   next();
 }
 function setCacheControlHeader(req,res,next) {
