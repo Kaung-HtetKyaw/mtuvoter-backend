@@ -33,12 +33,12 @@ var app = express();
 app.enable("trust proxy"); // heroku specific
 // enable cors
 function setOriginHeader(req, res, next) {
-  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080","https://main--practical-mestorf-eaedc4.netlify.app/", "https://pawritharya.codes","https://pawritharya.netlify.com"];
+  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080","https://main--practical-mestorf-eaedc4.netlify.app/", "https://www.pawritharya.codes/","https://mtuvoter.netlify.com"];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.header("Access-Control-Allow-Origin", "https://practical-mestorf-eaedc4.netlify.app");
+  res.header("Access-Control-Allow-Origin", "https://www.pawritharya.codes");
   next();
 }
 function setCacheControlHeader(req,res,next) {
