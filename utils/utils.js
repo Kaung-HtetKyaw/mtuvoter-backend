@@ -73,6 +73,8 @@ exports.ConvertISODateToMMDate = function (date) {
 }
 
 exports.getFrontEndUrl = function () {
-  if(process.env.NODE_ENV === 'production') return process.env.FRONT_END_PROD;
+  if(process.env.NODE_ENV === 'production'){
+    return process.env.FRONT_END_PROD;
+  } 
   return process.env.FRONT_END_DEV
 }
