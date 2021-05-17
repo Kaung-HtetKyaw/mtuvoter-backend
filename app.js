@@ -32,7 +32,8 @@ const {getFrontEndUrl} = require('./utils/utils')
 
 var app = express();
 const FRONT_END = getFrontEndUrl();
-
+console.log(FRONT_END);
+console.log(process.env.NODE_ENV)
 app.enable("trust proxy"); // heroku specific
 // enable cors
 function setOriginHeader(req, res, next) {
