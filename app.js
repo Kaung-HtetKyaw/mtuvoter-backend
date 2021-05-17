@@ -33,7 +33,7 @@ var app = express();
 app.enable("trust proxy"); // heroku specific
 // enable cors
 function setOriginHeader(req, res, next) {
-  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080", "https://www.pawritharya.codes/","https://mtuvoter.netlify.com"];
+  const allowedOrigins = ["http://127.0.0.1:8080", "http://localhost:8080", "https://www.pawritharya.codes","https://mtuvoter.netlify.com"];
   const origin = req.headers.origin;
   console.log(origin);
   console.log(allowedOrigins.includes(origin));
