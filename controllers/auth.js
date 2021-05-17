@@ -248,7 +248,6 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
     const resetToken = user.generateResetPasswordToken();
     await user.save({ validateBeforeSave: false });
     const url = `${FRONT_END}/reset/${resetToken}`;
-    console.log(url);
     await new Email(user, url).sendPasswordReset(resetToken, url);
     res.status(200).json({
       status: "success",
@@ -333,7 +332,6 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
 
 exports.includeUserInfo = catchAsyncError(async (req, res, next) => {
   const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
-  console.log('jwt',token)
   if (!token) {
     return next();
   }

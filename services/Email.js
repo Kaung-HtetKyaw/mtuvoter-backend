@@ -75,7 +75,6 @@ module.exports = class Email {
     };
 
     if (process.env.NODE_ENV === "production") {
-      console.log(process.env.SENDGRID_API);
       await this.createNewTransport().sendMail(mailOptions);
     }
   }

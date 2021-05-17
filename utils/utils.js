@@ -73,8 +73,10 @@ exports.ConvertISODateToMMDate = function (date) {
 }
 
 exports.getFrontEndUrl = function () {
+  const localhost = ['http://127.0.0.1','http://localhost:8080']
   if(process.env.NODE_ENV === 'production'){
     return process.env.FRONT_END_PROD;
   } 
+
   return process.env.FRONT_END_DEV
 }

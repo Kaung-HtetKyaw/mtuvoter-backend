@@ -22,8 +22,6 @@ exports.normalizeQueryString = (queryString, excluded_query) => {
 };
 
 exports.getQueryByParam = (Model, param, filter={}) => {
-  console.log(param)
-  console.log({ slug: param, ...filter })
   if (param.split("-").length > 1) {
     return Model.findOne({ slug: param, ...filter });
   }

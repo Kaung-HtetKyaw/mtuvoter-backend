@@ -73,7 +73,6 @@ exports.getAllNews = handler.getAll(News,(req)=>{
 });
 exports.getNews = handler.getOne(News, "",   (req) => {
   let isAuth = !!req.user && (req.user.role === 'admin' || req.user.role === 'mod');
-  console.log(isAuth)
   return isAuth?{}:{published:true}
 });
 exports.deleteNews = handler.deleteOne(News);

@@ -19,7 +19,7 @@ exports.checkVoteToken = catchAsyncError(async (req, res, next) => {
 });
 
 exports.hasVoted = catchAsyncError(async (req, res, next) => {
-  console.log('has voted',req.user)
+
   const { election: _election, position: _post } = req.body;
   const hasAlreadyVoted = await Ballot.exists({
     _v_t: req.voting_token_id,
@@ -41,8 +41,6 @@ exports.checkVotedElection = catchAsyncError(async (req,res,next) => {
   if(!token) {
     return next(new AppError('Token not found',404));
   }
-  console.log(token._election);
-  console.log(req.body.election)
   if(token._election !== req.body.election) {
     return next(new AppError("Your token does not belong to this election",400));
   }
