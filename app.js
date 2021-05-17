@@ -32,6 +32,7 @@ const {getFrontEndUrl} = require('./utils/utils')
 
 var app = express();
 const FRONT_END = getFrontEndUrl();
+const whitelists = ['http://localhost:8080','http://127.0.0.1','https://www.pawritharya.codes']
 
 app.enable("trust proxy"); // heroku specific
 // enable cors
@@ -64,7 +65,13 @@ app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    origin: FRONT_END,
+    origin: function (origin, callback) {
+      if (whitelists.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
   })
 );
 // handle options req for preflight case
