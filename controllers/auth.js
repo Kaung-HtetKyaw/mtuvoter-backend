@@ -9,7 +9,7 @@ const {
 const { createVerifyTokenAndSendMail } = require("../utils/email");
 const {generateHashedAndUnhashedCryptoToken} = require('../utils/token')
 
-const { getBaseUrl } = require("../utils/utils");
+const { getBaseUrl, getFrontEndUrl } = require("../utils/utils");
 const { catchAsyncError } = require("../utils/error");
 const {
   convertUnhashedToHashedCryptoToken,
@@ -18,6 +18,8 @@ const {
 } = require("../utils/token");
 const { days, seconds } = require("../utils/time");
 const Email = require("../services/Email");
+
+const FRONT_END = getFrontEndUrl();
 
 exports.protect = catchAsyncError(async (req, res, next) => {
   const token = getAuthTokenFromHeaderOrCookie(req, "jwt");
@@ -119,7 +121,7 @@ exports.verify = catchAsyncError(async (req, res, next) => {
   );
   const auth_token = createJWTCookie({ id: user._id }, req, res, "jwt");
   try {
-    const url = `${process.env.FRONT_END}/login`;
+    const url = `${FRONT_END}/login`;
     await new Email(user, url).sendWelcome();
     res.status(200).json(
       removeTokenFromResponseInDev(
@@ -245,7 +247,7 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
   try {
     const resetToken = user.generateResetPasswordToken();
     await user.save({ validateBeforeSave: false });
-    const url = `${process.env.FRONT_END}/reset/${resetToken}`;
+    const url = `${FRONT_END}/reset/${resetToken}`;
     console.log(url);
     await new Email(user, url).sendPasswordReset(resetToken, url);
     res.status(200).json({

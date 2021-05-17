@@ -1,14 +1,15 @@
 const Email = require("../services/Email");
 const AppError = require("./AppError");
-const { getBaseUrl } = require("./utils");
+const { getBaseUrl,getFrontEndUrl } = require("./utils");
 
+const FRONT_END = getFrontEndUrl();
 exports.createVerifyTokenAndSendMail = async (user, req, res, next) => {
   try {
     const verifyToken = user.generateVerifyToken();
     console.log(verifyToken)
     await user.save({ validateBeforeSave: false });
     // generate frontend url to display the verfication page
-    const url = `${process.env.FRONT_END}/verify/${verifyToken}`;
+    const url = `${FRONT_END}/verify/${verifyToken}`;
     await new Email(user, url).sendVerfication(verifyToken);
     res.status(200).json({
       status: "success",

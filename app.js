@@ -28,8 +28,11 @@ const newsRouter = require("./routes/news");
 const logRouter = require("./routes/log");
 
 const { minutes } = require("./utils/time");
+const {getFrontEndUrl} = require('./utils/utils')
 
 var app = express();
+const FRONT_END = getFrontEndUrl();
+
 app.enable("trust proxy"); // heroku specific
 // enable cors
 function setOriginHeader(req, res, next) {
@@ -40,7 +43,7 @@ function setOriginHeader(req, res, next) {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.header("Access-Control-Allow-Origin", "https://www.pawritharya.codes");
+  res.header("Access-Control-Allow-Origin", FRONT_END);
   next();
 }
 function setCacheControlHeader(req,res,next) {
@@ -59,7 +62,7 @@ app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    origin: "http://localhost:8080",
+    origin: FRONT_END,
   })
 );
 // handle options req for preflight case

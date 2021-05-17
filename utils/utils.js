@@ -71,3 +71,8 @@ exports.ConvertISODateToMMDate = function (date) {
   originalDate.setMinutes(originalDate.getMinutes() - 30);
   return originalDate;
 }
+
+exports.getFrontEndUrl = function () {
+  if(process.env.NODE_ENV === 'production') return process.env.FRONT_END_PROD;
+  return process.env.FRONT_END_DEV
+}
