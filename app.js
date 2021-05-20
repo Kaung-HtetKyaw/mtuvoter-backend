@@ -50,22 +50,23 @@ app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    origin: function (origin, callback) {
-      if (whitelists.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
+    origin: process.env.NODE_ENV === 'production' ? setCORSOrigin : 'http://localhost:8080'
   })
 );
+function setCORSOrigin(origin, callback ) {
+  if (whitelists.indexOf(origin) !== -1) {
+    callback(null, true)
+  } else {
+    callback(new Error('Not allowed by CORS'))
+  }
+}
 // handle options req for preflight case
 app.options(
   "*",
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    origin: "http://localhost:8080",
+    origin:  process.env.NODE_ENV === 'production' ? setCORSOrigin : 'http://localhost:8080',
   })
 );
 
